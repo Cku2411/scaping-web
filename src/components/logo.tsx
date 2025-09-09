@@ -14,11 +14,11 @@ const Logo = ({ fontSize = "text-2xl", iconSize = 20 }: Props) => {
       href={"/"}
       className={cn("font-extrabold flex items-center gap-2", fontSize)}
     >
-      <div className="rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 p-2">
+      <div className="rounded-xl bg-gradient-to-r from-amber-400 to-yellow-600 p-2">
         <SquareDashedMousePointer size={iconSize} className="stroke-white" />
       </div>
       <div>
-        <span className=" bg-gradient-to-r from-emerald-500 to-emerald-600 bg-clip-text text-transparent">
+        <span className=" bg-gradient-to-r from-amber-400 to-yellow-600 bg-clip-text text-transparent">
           Flow
         </span>
         <span className="text-stone-700 dark:text-stone-300">Scrape</span>

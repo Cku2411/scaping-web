@@ -1,4 +1,6 @@
+import BreadCrumbHeader from "@/components/Breadcrumb-header";
 import DesktopSidebar from "@/components/desktop-sidebar";
+import { ModeToggle } from "@/components/theme-mode-toggle";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
 
@@ -12,7 +14,10 @@ const Layout = ({ children }: Props) => {
       <DesktopSidebar />
       <div className="flex flex-col flex-1 min-h-screen">
         <header className="flex items-center justify-between px-6 py-4 h-[50px] container">
-          ScrapeFlow
+          <BreadCrumbHeader />
+          <div className="gap-1 flex items-center">
+            <ModeToggle />
+          </div>
         </header>
         <Separator />
         <div className="overflow-auto">
