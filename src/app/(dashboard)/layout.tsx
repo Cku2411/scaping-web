@@ -2,6 +2,7 @@ import BreadCrumbHeader from "@/components/Breadcrumb-header";
 import DesktopSidebar from "@/components/desktop-sidebar";
 import { ModeToggle } from "@/components/theme-mode-toggle";
 import { Separator } from "@/components/ui/separator";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 import React from "react";
 
 type Props = {
@@ -17,6 +18,9 @@ const Layout = ({ children }: Props) => {
           <BreadCrumbHeader />
           <div className="gap-1 flex items-center">
             <ModeToggle />
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
           </div>
         </header>
         <Separator />

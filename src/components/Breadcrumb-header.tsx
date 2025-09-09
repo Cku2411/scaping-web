@@ -7,6 +7,7 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
 } from "./ui/breadcrumb";
+import { MobileSideBar } from "./desktop-sidebar";
 
 type Props = {};
 
@@ -15,7 +16,8 @@ const BreadCrumbHeader = (props: Props) => {
   const paths = pathname === "/" ? [""] : pathname?.split("/");
 
   return (
-    <div className="flex items-center ">
+    <div className="flex items-center justify-start">
+      <MobileSideBar />
       <Breadcrumb>
         <BreadcrumbList>
           {paths.map((path, idx) => (
