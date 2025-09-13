@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { waitFor } from "@/lib/helper/waitFor";
 import React, { Suspense } from "react";
-import { GetWorkFlowsForUser } from "../../../../actions/workflows/getWorkflowsForUser";
+import { GetWorkFlowsForUser } from "../../../actions/workflows/getWorkflowsForUser";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, InboxIcon } from "lucide-react";
 import CreateWorkflowDialog from "./_components/create-workflow-dialog";
@@ -58,6 +58,8 @@ const UserWorkflows = async () => {
         </div>
       );
     }
+
+    return <pre>{JSON.stringify(workflows, null, 4)}</pre>;
   } catch (error) {
     return (
       <Alert variant={"destructive"}>
@@ -69,8 +71,6 @@ const UserWorkflows = async () => {
       </Alert>
     );
   }
-
-  return <div></div>;
 };
 
 export default WorkFlowPage;
