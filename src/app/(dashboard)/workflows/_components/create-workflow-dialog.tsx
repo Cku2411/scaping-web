@@ -37,7 +37,7 @@ const CreateWorkflowDialog = ({ triggerText }: Props) => {
 
   const form = useForm<CreateWorkFlowFormSchemaType>({
     resolver: zodResolver(createWorkflowFormSchema),
-    defaultValues: {},
+    defaultValues: { name: "", description: "" },
   });
 
   const onWorkflowFormSubmit = useCallback(
@@ -49,7 +49,13 @@ const CreateWorkflowDialog = ({ triggerText }: Props) => {
   );
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        form.reset();
+        setOpen(open);
+      }}
+    >
       <DialogTrigger asChild>
         <Button>{triggerText ?? "Create workflow"}</Button>
       </DialogTrigger>

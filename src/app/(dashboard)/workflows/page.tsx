@@ -5,6 +5,7 @@ import { GetWorkFlowsForUser } from "../../../actions/workflows/getWorkflowsForU
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, InboxIcon } from "lucide-react";
 import CreateWorkflowDialog from "./_components/create-workflow-dialog";
+import WorkflowCard from "./_components/workflow-card";
 
 type Props = {};
 
@@ -59,7 +60,13 @@ const UserWorkflows = async () => {
       );
     }
 
-    return <pre>{JSON.stringify(workflows, null, 4)}</pre>;
+    return (
+      <div className="grid grid-cols-1 gap-4">
+        {workflows.map((workflow, idx) => (
+          <WorkflowCard workflow={workflow} key={idx} />
+        ))}
+      </div>
+    );
   } catch (error) {
     return (
       <Alert variant={"destructive"}>
