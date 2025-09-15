@@ -1,6 +1,6 @@
 import BreadCrumbHeader from "@/components/Breadcrumb-header";
 import DesktopSidebar from "@/components/desktop-sidebar";
-import { ModeToggle } from "@/components/theme-mode-toggle";
+import { ThemeToggle } from "@/components/theme-mode-toggle";
 import { Separator } from "@/components/ui/separator";
 import { SignedIn, UserButton } from "@clerk/nextjs";
 import React from "react";
@@ -17,7 +17,7 @@ const Layout = ({ children }: Props) => {
         <header className="flex items-center justify-between px-6 py-4 h-[50px] container">
           <BreadCrumbHeader />
           <div className="gap-1 flex items-center">
-            <ModeToggle />
+            <ThemeToggle />
             <SignedIn>
               <UserButton />
             </SignedIn>
