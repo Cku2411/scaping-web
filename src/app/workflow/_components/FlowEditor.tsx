@@ -12,12 +12,17 @@ import {
 import "@xyflow/react/dist/style.css";
 import { CreateFlowNode } from "@/lib/workflow/createFlowNode";
 import { TaskType } from "@/types/taskType";
+import NodeComponent from "./nodes/NodeComponent";
+
+const nodeTypes = {
+  Node: NodeComponent,
+};
 
 type Props = {
   workflow: Workflow;
 };
 
-const FlowEditor = (props: Props) => {
+const FlowEditor = ({ workflow }: Props) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([
     CreateFlowNode(TaskType.LAUNCH_BROWSER),
   ]);
@@ -30,6 +35,7 @@ const FlowEditor = (props: Props) => {
         edges={edges}
         onEdgesChange={onEdgesChange}
         onNodesChange={onNodesChange}
+        nodeTypes={nodeTypes}
       >
         <Controls position="top-left" />
         <Background variant={BackgroundVariant.Dots} gap={12} />

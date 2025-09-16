@@ -7,6 +7,7 @@ export const CreateFlowNode = (
 ): AppNode => {
   return {
     id: crypto.randomUUID(),
+    type: "Node",
     data: {
       type: nodeType,
       inputs: {},
