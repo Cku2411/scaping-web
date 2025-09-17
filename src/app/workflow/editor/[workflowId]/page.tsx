@@ -10,7 +10,7 @@ const WorkflowEditor = async ({
 }: {
   params: { workflowId: string };
 }) => {
-  const { workflowId } = params;
+  const { workflowId } = await params;
 
   const user = await currentUser();
   if (!user?.id) {
