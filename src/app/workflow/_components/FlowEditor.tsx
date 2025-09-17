@@ -18,6 +18,9 @@ const nodeTypes = {
   Node: NodeComponent,
 };
 
+const snapGrid: [number, number] = [50, 50];
+const fitViewOptions = { padding: 1 };
+
 type Props = {
   workflow: Workflow;
 };
@@ -36,8 +39,12 @@ const FlowEditor = ({ workflow }: Props) => {
         onEdgesChange={onEdgesChange}
         onNodesChange={onNodesChange}
         nodeTypes={nodeTypes}
+        snapToGrid
+        snapGrid={snapGrid}
+        fitView
+        fitViewOptions={fitViewOptions}
       >
-        <Controls position="top-left" />
+        <Controls position="top-left" fitViewOptions={fitViewOptions} />
         <Background variant={BackgroundVariant.Dots} gap={12} />
       </ReactFlow>
     </main>
