@@ -3,6 +3,7 @@
 import { db } from "@/lib/prisma";
 import { WorkflowStatus } from "@/types/workfowTypes";
 import { currentUser } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 
 export const updateWorkflow = async ({
   id,
@@ -38,4 +39,5 @@ export const updateWorkflow = async ({
       userId: user.id,
     },
   });
+  revalidatePath("/workflows");
 };
