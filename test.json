@@ -1,0 +1,27 @@
+{
+    "nodes": [
+        {
+            "id": "5ea44d70-810e-46db-ab04-821576e1af06",
+            "type": "Node",
+            "dragHandle": ".drag-handle",
+            "data": {
+                "type": "LAUNCH_BROWSER",
+                "inputs": {}
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "measured": {
+                "width": 420,
+                "height": 175
+            }
+        }
+    ],
+    "edges": [],
+    "viewport": {
+        "x": 308,
+        "y": 280.75,
+        "zoom": 1.4714285714285715
+    }
+}
