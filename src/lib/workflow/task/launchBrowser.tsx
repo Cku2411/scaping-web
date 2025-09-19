@@ -20,11 +20,6 @@ export const LaunchBrowserTask = {
       hideHandle: true,
     },
   ],
+  outputs: [{ name: "Web page", type: TaskParamType.BROWSER_INSTANCE }],
 };
 // co phai chinh tailwindCss k?
-
-const LaunchBrowser = (props: Props) => {
-  return <div>LaunchBrowser</div>;
-};
-
-// export default LaunchBrowser;

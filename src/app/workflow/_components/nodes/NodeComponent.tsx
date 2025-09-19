@@ -4,6 +4,7 @@ import NodeHeader from "./NodeHeader";
 import { AppNodeData } from "@/types/appNodeType";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import NodeInputs, { NodeInput } from "./NodeInputs";
+import NodeOutputs, { NodeOutput } from "./NodeOutputs";
 
 type Props = {
   id: string;
@@ -23,6 +24,12 @@ const NodeComponent = memo((props: Props) => {
           <NodeInput input={input} key={idx} nodeId={props.id} />
         ))}
       </NodeInputs>
+
+      <NodeOutputs>
+        {task.outputs.map((output, idx) => (
+          <NodeOutput output={output} key={idx} />
+        ))}
+      </NodeOutputs>
     </NodeCard>
   );
 });

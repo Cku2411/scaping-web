@@ -17,3 +17,8 @@ export interface TaskParamInput {
   value?: string;
   [key: string]: any;
 }
+
+export interface TaskPramOutput {
+  name: string;
+  type: TaskParamType;
+}

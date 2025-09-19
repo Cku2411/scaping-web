@@ -1,27 +1,12 @@
 {
-    "nodes": [
-        {
-            "id": "5ea44d70-810e-46db-ab04-821576e1af06",
-            "type": "Node",
-            "dragHandle": ".drag-handle",
-            "data": {
-                "type": "LAUNCH_BROWSER",
-                "inputs": {}
-            },
-            "position": {
-                "x": 0,
-                "y": 0
-            },
-            "measured": {
-                "width": 420,
-                "height": 175
-            }
-        }
-    ],
-    "edges": [],
-    "viewport": {
-        "x": 308,
-        "y": 280.75,
-        "zoom": 1.4714285714285715
-    }
+  "workflow": {
+    "id": "cmfpjxh5o0000uvg8cov115fs",
+    "userId": "user_32SHOpQvhUfJgCRmuUFyMUExLlK",
+    "name": "in the kitchen",
+    "description": "",
+    "definition": "{\n    \"nodes\": [\n        {\n            \"id\": \"57767fb3-e0bb-4b76-bc06-383f4a219b79\",\n            \"type\": \"Node\",\n            \"dragHandle\": \".drag-handle\",\n            \"data\": {\n                \"type\": \"LAUNCH_BROWSER\",\n                \"inputs\": {\n                    \"Website URL\": \"for working\"\n                }\n            },\n            \"position\": {\n                \"x\": -100,\n                \"y\": -200\n            },\n            \"measured\": {\n                \"width\": 420,\n                \"height\": 175\n            },\n            \"selected\": false,\n            \"dragging\": false\n        },\n        {\n            \"id\": \"2e9d4896-d3dd-48a2-bae2-7d3fb2b852f1\",\n            \"type\": \"Node\",\n            \"dragHandle\": \".drag-handle\",\n            \"data\": {\n                \"type\": \"PAGE_TO_HTML\",\n                \"inputs\": {}\n            },\n            \"position\": {\n                \"x\": 200,\n                \"y\": 350\n            },\n            \"measured\": {\n                \"width\": 420,\n                \"height\": 99\n            }\n        },\n        {\n            \"id\": \"41f46331-8cff-4663-9782-20f724ba5917\",\n            \"type\": \"Node\",\n            \"dragHandle\": \".drag-handle\",\n            \"data\": {\n                \"type\": \"PAGE_TO_HTML\",\n                \"inputs\": {}\n            },\n            \"position\": {\n                \"x\": -250,\n                \"y\": 150\n            },\n            \"measured\": {\n                \"width\": 420,\n                \"height\": 99\n            },\n            \"selected\": false,\n            \"dragging\": false\n        },\n        {\n            \"id\": \"a1518113-4b3e-4587-acc2-abe4b32da871\",\n            \"type\": \"Node\",\n            \"dragHandle\": \".drag-handle\",\n            \"data\": {\n                \"type\": \"PAGE_TO_HTML\",\n                \"inputs\": {}\n            },\n            \"position\": {\n                \"x\": 750,\n                \"y\": -200\n            },\n            \"measured\": {\n                \"width\": 420,\n                \"height\": 99\n            }\n        },\n        {\n            \"id\": \"40e753d1-f5b2-4ec8-b519-783a05018bde\",\n            \"type\": \"Node\",\n            \"dragHandle\": \".drag-handle\",\n            \"data\": {\n                \"type\": \"PAGE_TO_HTML\",\n                \"inputs\": {}\n            },\n            \"position\": {\n                \"x\": 850,\n                \"y\": 300\n            },\n            \"measured\": {\n                \"width\": 420,\n                \"height\": 99\n            },\n            \"selected\": true,\n            \"dragging\": false\n        }\n    ],\n    \"edges\": [],\n    \"viewport\": {\n        \"x\": 206.65374353387182,\n        \"y\": 316.6707554593733,\n        \"zoom\": 0.5743491774985177\n    }\n}",
+    "status": "DRAFT",
+    "createAt": "2025-09-18T15:14:34.139Z",
+    "updateAt": "2025-09-19T07:59:20.575Z"
+  }
 }
