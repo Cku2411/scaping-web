@@ -14,5 +14,6 @@ export interface AppNode extends Node {
 export type ParamProps = {
   param: TaskParamInput;
   value: string;
+  disabled?: boolean;
   updateNodeParamValue: (newValue: string) => void;
 };

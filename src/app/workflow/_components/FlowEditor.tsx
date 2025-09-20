@@ -18,9 +18,14 @@ import { CreateFlowNode } from "@/lib/workflow/createFlowNode";
 import { TaskType } from "@/types/taskType";
 import NodeComponent from "./nodes/NodeComponent";
 import { AppNode } from "@/types/appNodeType";
+import DeletableEdge from "./edges/DeletableEdge";
 
 const nodeTypes = {
   Node: NodeComponent,
+};
+
+const edgeTypes = {
+  default: DeletableEdge,
 };
 
 const snapGrid: [number, number] = [50, 50];
@@ -31,11 +36,9 @@ type Props = {
 };
 
 const FlowEditor = ({ workflow }: Props) => {
-  console.log({ workflow });
-
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const { setViewport, screenToFlowPosition } = useReactFlow();
+  const { setViewport, screenToFlowPosition, updateNodeData } = useReactFlow();
 
   useEffect(() => {
     try {
@@ -53,24 +56,40 @@ const FlowEditor = ({ workflow }: Props) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
   }, []);
-  const onDrop = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    const taskType = event.dataTransfer.getData("application/reactflow");
-    if (typeof taskType === undefined || !taskType) return;
+  const onDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault();
+      const taskType = event.dataTransfer.getData("application/reactflow");
+      if (typeof taskType === undefined || !taskType) return;
 
-    const position = screenToFlowPosition({
-      x: event.clientX,
-      y: event.clientY,
-    });
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
 
-    const newNode = CreateFlowNode(taskType as TaskType, position);
-    setNodes((nds) => nds.concat(newNode));
-  }, []);
+      const newNode = CreateFlowNode(taskType as TaskType, position);
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [screenToFlowPosition, setNodes]
+  );
 
-  const onConnect = useCallback((connection: Connection) => {
-    console.log("ON CONNECT", connection);
-    setEdges((eds) => addEdge({ ...connection, animated: true }, eds));
-  }, []);
+  const onConnect = useCallback(
+    (connection: Connection) => {
+      console.log("ON CONNECT", connection);
+      setEdges((eds) => addEdge({ ...connection, animated: true }, eds));
+      if (!connection.targetHandle) return;
+      // remove input value if is present on connection
+      const node = nodes.find((nd) => nd.id === connection.target);
+      if (!node) return;
+
+      const nodeInputs = { ...node.data.inputs };
+      delete nodeInputs[connection.targetHandle];
+      updateNodeData(node.id, {
+        inputs: nodeInputs,
+      });
+    },
+    [setEdges, updateNodeData, nodes]
+  );
 
   return (
     <main className="h-full w-full">
@@ -80,6 +99,7 @@ const FlowEditor = ({ workflow }: Props) => {
         onEdgesChange={onEdgesChange}
         onNodesChange={onNodesChange}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         snapToGrid
         snapGrid={snapGrid}
         fitView

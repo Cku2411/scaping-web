@@ -12,7 +12,6 @@ type Props = {
 
 const SaveBtn = ({ workflowId }: Props) => {
   const { toObject } = useReactFlow();
-  console.log({ workflowId });
   const { updateWorkflowMutation, isUpdateWorkflowPending } = useUpdateWorkflow(
     { workflowId }
   );
