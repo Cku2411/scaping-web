@@ -36,6 +36,7 @@ export const NodeInput = ({
         <Handle
           id={input.name}
           type="target"
+          isConnectable={!isConnected}
           position={Position.Left}
           className={cn(
             "!bg-muted-foreground !border-2 !border-backgorund !-left-2 !size-4",
