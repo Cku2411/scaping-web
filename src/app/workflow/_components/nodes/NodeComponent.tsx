@@ -5,7 +5,9 @@ import { AppNodeData } from "@/types/appNodeType";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import NodeInputs, { NodeInput } from "./NodeInputs";
 import NodeOutputs, { NodeOutput } from "./NodeOutputs";
+import { Badge } from "@/components/ui/badge";
 
+const DEV_MODE = process.env.NEXT_PUBLIC_DEV_NODE === "true";
 type Props = {
   id: string;
   selected: boolean;
@@ -18,6 +20,7 @@ const NodeComponent = memo((props: Props) => {
 
   return (
     <NodeCard nodeId={props.id} isSelected={props.selected}>
+      {DEV_MODE && <Badge>DEV: {props.id}</Badge>}
       <NodeHeader taskType={nodeData.type} nodeId={props.id} />
       <NodeInputs>
         {task.inputs.map((input, idx) => (

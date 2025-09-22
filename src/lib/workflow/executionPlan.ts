@@ -1,6 +1,9 @@
 import { AppNode } from "@/types/appNodeType";
-import { WorkflowExecutionPlan } from "@/types/workfowTypes";
-import { Edge } from "@xyflow/react";
+import {
+  WorkflowExecutionPlan,
+  WorkflowExecutionPlanPhase,
+} from "@/types/workfowTypes";
+import { Edge, getIncomers } from "@xyflow/react";
 import { TaskRegistry } from "./task/registry";
 
 type FlowToExecutionPlan = {
@@ -19,6 +22,9 @@ export const FlowToExecutionPlan = (
     throw new Error("TODO: HANDLE THIS ERROR");
   }
 
+  console.log(`execute: node.length:`, nodes);
+
+  const planned = new Set<string>();
   const executionPlan: WorkflowExecutionPlan = [
     {
       phase: 1,
@@ -26,5 +32,89 @@ export const FlowToExecutionPlan = (
     },
   ];
 
+  // add entrypoint to plan
+  planned.add(entryPoint.id);
+
+  for (
+    let phase = 2;
+    phase <= nodes.length && planned.size < nodes.length;
+    phase++
+  ) {
+    const nextPhase: WorkflowExecutionPlanPhase = { phase, nodes: [] };
+
+    for (const currentNode of nodes) {
+      if (planned.has(currentNode.id)) {
+        // Node already put in the execution plan
+        continue;
+      }
+
+      const invalidInputs = getInvalidInputs(currentNode, edges, planned);
+      if (invalidInputs.length > 0) {
+        const incomers = getIncomers(currentNode, nodes, edges);
+        if (incomers.every((incomers) => planned.has(incomers.id))) {
+          // if all incoming incomers/edges are planned and there are still invalid inputs. this measn that this particular node has an invalid input. which means the workflow is invalid
+
+          console.error("Invalid inputs", currentNode.id, invalidInputs);
+          throw new Error("TODO: HANDLE ERROR");
+        } else {
+          // let skip this node
+          continue;
+        }
+      }
+
+      nextPhase.nodes.push(currentNode);
+    }
+
+    // add nodeId to plan
+    for (const node of nextPhase.nodes) {
+      planned.add(node.id);
+    }
+    executionPlan.push(nextPhase);
+  }
+
   return { executionPlan };
+};
+
+const getInvalidInputs = (
+  node: AppNode,
+  edges: Edge[],
+  planned: Set<string>
+) => {
+  const invalidInputs = [];
+  const inputs = TaskRegistry[node.data.type].inputs;
+
+  for (const input of inputs) {
+    const inputValue = node.data.inputs[input.name];
+    const inputValueProvided = inputValue?.length > 0;
+    if (inputValueProvided) {
+      // this input is fine, so we can move on
+      continue;
+    }
+
+    // if a value is not provided by the user then we need to check if there is an output linked to the current input
+    const incomingEdges = edges.filter((edge) => edge.target === node.id);
+    const inputLinkedToOutput = incomingEdges.find(
+      (edge) => edge.targetHandle == input.name
+    );
+    const requiredInputProvidedByVisitedOuput =
+      input.required &&
+      inputLinkedToOutput &&
+      planned.has(inputLinkedToOutput.source);
+
+    if (requiredInputProvidedByVisitedOuput) {
+      // the input is required and we have a valid value for it. provided by a task tha is already planned
+      continue;
+    } else if (!input.required) {
+      // if the input is not required but there is an output link to it then we need to be sure that the output is already plananed
+      if (!inputLinkedToOutput) continue;
+      if (inputLinkedToOutput && planned.has(inputLinkedToOutput.source)) {
+        // the output is providing a value to the input
+        continue;
+      }
+    }
+
+    invalidInputs.push(input.name);
+  }
+
+  return invalidInputs;
 };
