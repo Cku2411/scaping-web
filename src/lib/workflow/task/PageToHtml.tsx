@@ -1,4 +1,5 @@
 import { TaskParamType, TaskType } from "@/types/taskType";
+import { WorkflowTask } from "@/types/workfowTypes";
 import { Code2Icon, LucideProps } from "lucide-react";
 import React from "react";
 
@@ -10,6 +11,8 @@ export const PageToHtml = {
   icon: (props: LucideProps) => (
     <Code2Icon className="stroke-rose-400" {...props} />
   ),
+  credits: 2,
+
   isEntryPoint: false,
   inputs: [
     {
@@ -25,7 +28,7 @@ export const PageToHtml = {
     },
     { name: "Web page", type: TaskParamType.BROWSER_INSTANCE },
   ],
-};
+} satisfies WorkflowTask;
 // co phai chinh tailwindCss k?
 
 const LaunchBrowser = (props: Props) => {
