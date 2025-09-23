@@ -3,7 +3,7 @@ import {
   WorkflowExecutionPlan,
   WorkflowExecutionPlanPhase,
 } from "@/types/workfowTypes";
-import { Edge, getIncomers } from "@xyflow/react";
+import { Edge } from "@xyflow/react";
 import { TaskRegistry } from "./task/registry";
 
 export enum FlowToExecutionPlanValidationError {
@@ -11,11 +11,11 @@ export enum FlowToExecutionPlanValidationError {
   "INVALID_INPUTS",
 }
 
-type FlowToExecutionPlan = {
+export type FlowToExecutionPlan = {
   executionPlan?: WorkflowExecutionPlan;
   error?: {
     type: FlowToExecutionPlanValidationError;
-    invalidElements?: AppNodeMissingInputs;
+    invalidElements?: AppNodeMissingInputs[];
   };
 };
 
@@ -78,7 +78,10 @@ export const FlowToExecutionPlan = (
           // if all incoming incomers/edges are planned and there are still invalid inputs. this measn that this particular node has an invalid input. which means the workflow is invalid
 
           console.error("Invalid inputs", currentNode.id, invalidInputs);
-          throw new Error("TODO: HANDLE ERROR");
+          inputsWithErrors.push({
+            nodeId: currentNode.id,
+            inputs: invalidInputs,
+          });
         } else {
           // let skip this node
           continue;
@@ -93,6 +96,15 @@ export const FlowToExecutionPlan = (
       planned.add(node.id);
     }
     executionPlan.push(nextPhase);
+  }
+
+  if (inputsWithErrors.length > 0) {
+    return {
+      error: {
+        type: FlowToExecutionPlanValidationError.INVALID_INPUTS,
+        invalidElements: inputsWithErrors,
+      },
+    };
   }
 
   return { executionPlan };
@@ -140,4 +152,20 @@ const getInvalidInputs = (
   }
 
   return invalidInputs;
+};
+
+const getIncomers = (node: AppNode, nodes: AppNode[], edges: Edge[]) => {
+  if (!node.id) {
+    return [];
+  }
+
+  const incomersId = new Set();
+
+  edges.forEach((edge) => {
+    if (edge.target === node.id) {
+      incomersId.add(edge.source);
+    }
+  });
+
+  return nodes.filter((node) => incomersId.has(node.id));
 };

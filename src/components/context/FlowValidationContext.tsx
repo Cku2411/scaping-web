@@ -1,3 +1,4 @@
+"use client";
 import { AppNodeMissingInputs } from "@/types/appNodeType";
 import {
   createContext,
