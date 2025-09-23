@@ -1,4 +1,4 @@
-import { AppNode } from "@/types/appNodeType";
+import { AppNode, AppNodeMissingInputs } from "@/types/appNodeType";
 import {
   WorkflowExecutionPlan,
   WorkflowExecutionPlanPhase,
@@ -6,8 +6,17 @@ import {
 import { Edge, getIncomers } from "@xyflow/react";
 import { TaskRegistry } from "./task/registry";
 
+export enum FlowToExecutionPlanValidationError {
+  "NO_ENTRY_POINT",
+  "INVALID_INPUTS",
+}
+
 type FlowToExecutionPlan = {
   executionPlan?: WorkflowExecutionPlan;
+  error?: {
+    type: FlowToExecutionPlanValidationError;
+    invalidElements?: AppNodeMissingInputs;
+  };
 };
 
 export const FlowToExecutionPlan = (
@@ -19,12 +28,26 @@ export const FlowToExecutionPlan = (
   );
 
   if (!entryPoint) {
-    throw new Error("TODO: HANDLE THIS ERROR");
+    return {
+      error: {
+        type: FlowToExecutionPlanValidationError.NO_ENTRY_POINT,
+      },
+    };
   }
 
   console.log(`execute: node.length:`, nodes);
+  const inputsWithErrors: AppNodeMissingInputs[] = [];
 
   const planned = new Set<string>();
+
+  const invalidInputs = getInvalidInputs(entryPoint, edges, planned);
+  if (invalidInputs.length > 0) {
+    inputsWithErrors.push({
+      nodeId: entryPoint.id,
+      inputs: invalidInputs,
+    });
+  }
+
   const executionPlan: WorkflowExecutionPlan = [
     {
       phase: 1,
