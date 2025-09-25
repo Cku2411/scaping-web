@@ -14,8 +14,8 @@ type Props = {
 };
 
 const ExecutionViewerPage = async ({ params }: Props) => {
-  const executionId = await params.executionId;
-  const workflowId = await params.workflowId;
+  const { executionId } = await params;
+  const { workflowId } = await params;
   return (
     <div className="flex flex-col h-screen w-full overflow-hidden">
       <Topbar
