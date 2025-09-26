@@ -11,13 +11,15 @@ import {
   LucideIcon,
   WorkflowIcon,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { datesToDurationString } from "@/lib/helper/date";
 import { GetPhasesTotalCost } from "@/lib/helper/phases";
+import { WorkflowExecutionStatus } from "@/types/workfowTypes";
+import { useGetWorkflowPhaseDetails } from "@/hooks/useGetWorkflowPhaseDetails";
 
 type ExecutionData = Awaited<ReturnType<typeof getWorkflowExecutionWithPhases>>;
 
@@ -26,7 +28,13 @@ type Props = {
 };
 
 const ExecutionViewer = ({ initialData }: Props) => {
+  const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
   const executionQuery = useGetWorkflowExecutionWithPhase(initialData);
+
+  const phaseDetailQuery = useGetWorkflowPhaseDetails(selectedPhase);
+
+  const isRunning =
+    executionQuery.data?.status === WorkflowExecutionStatus.RUNNING;
 
   const duration = datesToDurationString(
     executionQuery.data?.completedAt,
@@ -94,17 +102,26 @@ const ExecutionViewer = ({ initialData }: Props) => {
               <Button
                 key={index}
                 className="w-full justify-between"
-                variant={"ghost"}
+                variant={selectedPhase === phase.id ? "secondary" : "ghost"}
+                onClick={() => {
+                  if (isRunning) return;
+                  setSelectedPhase(phase.id);
+                }}
               >
                 <div className="flex items-center gap-2">
                   <Badge variant={"outline"}>{index + 1}</Badge>
                   <p className="font-semibold">{phase.name}</p>
                 </div>
+                <p className="text-xs text-muted-foreground ">{phase.status}</p>
               </Button>
             );
           })}
         </div>
       </aside>
+
+      <div className=" flex w-full h-full">
+        <pre>{JSON.stringify(phaseDetailQuery?.data, null, 4)}</pre>
+      </div>
     </div>
   );
 };

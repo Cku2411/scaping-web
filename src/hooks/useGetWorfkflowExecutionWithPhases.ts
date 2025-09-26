@@ -1,7 +1,7 @@
 "use client";
 
 import getWorkflowExecutionWithPhases from "@/actions/workflows/getWorkflowExecutionWIthPhases";
-import { WorkfloExecutionStatus } from "@/types/workfowTypes";
+import { WorkflowExecutionStatus } from "@/types/workfowTypes";
 import { useQuery } from "@tanstack/react-query";
 
 type ExecutionData = Awaited<ReturnType<typeof getWorkflowExecutionWithPhases>>;
@@ -15,7 +15,7 @@ export const useGetWorkflowExecutionWithPhase = (
 
     queryFn: () => getWorkflowExecutionWithPhases(initialData!.id),
     refetchInterval: (q) =>
-      q.state.data?.status === WorkfloExecutionStatus.RUNNING ? 1000 : false,
+      q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 1000 : false,
   });
 
   return query;

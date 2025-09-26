@@ -5,7 +5,7 @@ import { FlowToExecutionPlan } from "@/lib/workflow/executionPlan";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import {
   ExecutionPhasesStatus,
-  WorkfloExecutionStatus,
+  WorkflowExecutionStatus,
   WorkflowExecutionPlan,
   WorkflowExecutionTrigger,
 } from "@/types/workfowTypes";
@@ -62,7 +62,7 @@ export const RunWorkflow = async (form: {
       workflowId,
       userId: user.id,
       trigger: WorkflowExecutionTrigger.MANUAL,
-      status: WorkfloExecutionStatus.PENDING,
+      status: WorkflowExecutionStatus.PENDING,
       startedAt: new Date(),
       phases: {
         create: executionPlan.flatMap((phase) => {
@@ -88,6 +88,7 @@ export const RunWorkflow = async (form: {
     throw new Error("Workflow execution not created");
   }
 
+  executeWorkflow(execution.id);
   //forward to the running page
   redirect(`/workflow/runs/${workflowId}/${execution.id}`);
 };
