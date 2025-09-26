@@ -54,7 +54,7 @@ const ExecutionViewer = ({ initialData }: Props) => {
           <ExecutionLabel
             icon={CircleDashedIcon}
             label={"Status"}
-            value={initialData?.status}
+            value={executionQuery.data?.status}
           />
 
           <ExecutionLabel
