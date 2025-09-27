@@ -90,6 +90,7 @@ export const RunWorkflow = async (form: {
   }
 
   executeWorkflow(execution.id);
+  return { executionId: execution.id, workflowId };
   //forward to the running page
-  redirect(`/workflow/runs/${workflowId}/${execution.id}`);
+  // redirect(`/workflow/runs/${workflowId}/${execution.id}`);
 };

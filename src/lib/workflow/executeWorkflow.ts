@@ -9,6 +9,9 @@ import { WorkflowExecution, Prisma, ExecutionPhase } from "@prisma/client";
 import { waitFor } from "../helper/waitFor";
 import { AppNode } from "@/types/appNodeType";
 import { TaskRegistry } from "./task/registry";
+import { TaskType } from "@/types/taskType";
+import { ExecutorRegistry } from "./executor/executorRegistry";
+import { EnviromentType } from "@/types/executorType";
 
 type ExecutionWithRelations = Prisma.WorkflowExecutionGetPayload<{
   include: { workflow: true; phases: true };
@@ -27,7 +30,7 @@ export const executeWorkflow = async (executionId: string) => {
   }
 
   //   TODO :setupp execution everoment
-  const enviroment = {
+  const enviroment: EnviromentType = {
     phases: {
       // launchBrowser: {
       //   inputs: {
@@ -50,23 +53,23 @@ export const executeWorkflow = async (executionId: string) => {
 
   let executionFailed = false;
   for (const phase of execution.phases) {
-    const phaseExecution = await executeWorkflowPhase(phase);
+    const phaseExecution = await executeWorkflowPhase(phase, enviroment);
     if (!phaseExecution.success) {
       executionFailed = true;
       break;
     }
     // TODO: execute phaes
 
-    await finalizeWorkflowExecution(
-      executionId,
-      execution.workflowId,
-      executionFailed,
-      creaditsConsumed
-    );
     // TODO: clean up enviroment
-
-    // revalidatePath("/workflows/runs");
   }
+
+  await finalizeWorkflowExecution(
+    executionId,
+    execution.workflowId,
+    executionFailed,
+    creaditsConsumed
+  );
+  // revalidatePath("/workflows/runs");
 };
 
 // ===============================================FUNCTION===========
@@ -113,6 +116,50 @@ const initializePhasesStatuses = async (execution: ExecutionWithRelations) => {
   });
 };
 
+const executeWorkflowPhase = async (
+  phase: ExecutionPhase,
+  enviroment: EnviromentType
+) => {
+  const startedAt = new Date();
+
+  const node = JSON.parse(phase.node) as AppNode;
+
+  setupEnviromentForPhase(node, enviroment);
+  // update phase status
+  await db.executionPhase.update({
+    where: {
+      id: phase.id,
+    },
+    data: {
+      status: ExecutionPhasesStatus.RUNNING,
+    },
+  });
+
+  const creaditsRequired = TaskRegistry[node.data.type].credits;
+
+  const success = await executePhase(phase, node, enviroment);
+  // TODO: decrement user balance
+
+  await finalizePhase(phase.id, success);
+  return { success };
+};
+
+const finalizePhase = async (phaseId: string, success: boolean) => {
+  const finalStatus = success
+    ? ExecutionPhasesStatus.COMPETED
+    : ExecutionPhasesStatus.FAILED;
+
+  await db.executionPhase.update({
+    where: {
+      id: phaseId,
+    },
+    data: {
+      status: finalStatus,
+      completedAt: new Date(),
+    },
+  });
+};
+
 const finalizeWorkflowExecution = async (
   executeId: string,
   workflowId: string,
@@ -153,46 +200,29 @@ const finalizeWorkflowExecution = async (
     });
 };
 
-const executeWorkflowPhase = async (phase: ExecutionPhase) => {
-  const startedAt = new Date();
+const executePhase = async (
+  phase: ExecutionPhase,
+  node: AppNode,
+  enviroment: EnviromentType
+): Promise<boolean> => {
+  const runFn = ExecutorRegistry[node.data.type];
 
-  const node = JSON.parse(phase.node) as AppNode;
-  // update phase status
-  await db.executionPhase.update({
-    where: {
-      id: phase.id,
-    },
-    data: {
-      status: ExecutionPhasesStatus.RUNNING,
-    },
-  });
-
-  const creaditsRequired = TaskRegistry[node.data.type].credits;
-  console.log(
-    `Execution Phase ${phase.name} with ${creaditsRequired} creadits required`
-  );
-
-  // TODO: decrement user balance
-  // Execution phase simulation
-  await waitFor(2000);
-  const success = true;
-
-  await finalizePhase(phase.id, success);
-  return { success };
+  if (!runFn) {
+    return false;
+  }
+  return await runFn(enviroment.phases[node.id]);
 };
 
-const finalizePhase = async (phaseId: string, success: boolean) => {
-  const finalStatus = success
-    ? ExecutionPhasesStatus.COMPETED
-    : ExecutionPhasesStatus.FAILED;
+const setupEnviromentForPhase = (node: AppNode, enviroment: EnviromentType) => {
+  enviroment.phases[node.id] = { inputs: {}, outputs: {} };
+  const inputsDefinition = TaskRegistry[node.data.type].inputs;
+  for (const input of inputsDefinition) {
+    const inputValue = node.data.inputs[input.name];
+    if (inputValue) {
+      enviroment.phases[node.id].inputs[input.name] = inputValue;
+      continue;
+    }
 
-  await db.executionPhase.update({
-    where: {
-      id: phaseId,
-    },
-    data: {
-      status: finalStatus,
-      completedAt: new Date(),
-    },
-  });
+    // Get input value fron output in the enviroment
+  }
 };
