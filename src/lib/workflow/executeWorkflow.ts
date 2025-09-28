@@ -14,6 +14,7 @@ import { ExecutorRegistry } from "./executor/executorRegistry";
 import { EnviromentType, ExecutionEnviromentType } from "@/types/executorType";
 import { LaunchBrowserTask } from "./task/launchBrowser";
 import { Browser, Page } from "puppeteer";
+import { Edge } from "@xyflow/react";
 
 type ExecutionWithRelations = Prisma.WorkflowExecutionGetPayload<{
   include: { workflow: true; phases: true };
@@ -32,6 +33,8 @@ export const executeWorkflow = async (executionId: string) => {
   }
 
   //   TODO :setupp execution everoment
+  const edges = JSON.parse(execution.definition).edges as Edge[];
+
   const enviroment: EnviromentType = {
     phases: {
       // launchBrowser: {
@@ -55,7 +58,7 @@ export const executeWorkflow = async (executionId: string) => {
 
   let executionFailed = false;
   for (const phase of execution.phases) {
-    const phaseExecution = await executeWorkflowPhase(phase, enviroment);
+    const phaseExecution = await executeWorkflowPhase(phase, enviroment, edges);
     if (!phaseExecution.success) {
       executionFailed = true;
       break;
@@ -121,13 +124,14 @@ const initializePhasesStatuses = async (execution: ExecutionWithRelations) => {
 
 const executeWorkflowPhase = async (
   phase: ExecutionPhase,
-  enviroment: EnviromentType
+  enviroment: EnviromentType,
+  edges: Edge[]
 ) => {
   const startedAt = new Date();
 
   const node = JSON.parse(phase.node) as AppNode;
 
-  setupEnviromentForPhase(node, enviroment);
+  setupEnviromentForPhase(node, enviroment, edges);
   // update phase status
   await db.executionPhase.update({
     where: {
@@ -145,13 +149,18 @@ const executeWorkflowPhase = async (
   console.log(`Starting phase ${phase.id} (${phase.name}) node ${node.id}`);
 
   const success = await executePhase(phase, node, enviroment);
+  const outputs = enviroment.phases[node.id].outputs;
   // TODO: decrement user balance
 
-  await finalizePhase(phase.id, success);
+  await finalizePhase(phase.id, success, outputs);
   return { success };
 };
 
-const finalizePhase = async (phaseId: string, success: boolean) => {
+const finalizePhase = async (
+  phaseId: string,
+  success: boolean,
+  outputs: any
+) => {
   const finalStatus = success
     ? ExecutionPhasesStatus.COMPETED
     : ExecutionPhasesStatus.FAILED;
@@ -163,6 +172,7 @@ const finalizePhase = async (phaseId: string, success: boolean) => {
     data: {
       status: finalStatus,
       completedAt: new Date(),
+      outputs: JSON.stringify(outputs),
     },
   });
 };
@@ -223,7 +233,11 @@ const executePhase = async (
   return await runFn(executionEnviroment);
 };
 
-const setupEnviromentForPhase = (node: AppNode, enviroment: EnviromentType) => {
+const setupEnviromentForPhase = (
+  node: AppNode,
+  enviroment: EnviromentType,
+  edges: Edge[]
+) => {
   enviroment.phases[node.id] = { inputs: {}, outputs: {} };
   const inputs = TaskRegistry[node.data.type].inputs;
   for (const input of inputs) {
@@ -237,6 +251,22 @@ const setupEnviromentForPhase = (node: AppNode, enviroment: EnviromentType) => {
     }
 
     // Get input value fron output in the enviroment
+    // get edge connectd
+    const connectedEdge = edges.find(
+      (edge) => edge.targetHandle === input.name && edge.target === node.id
+    );
+
+    if (!connectedEdge) {
+      console.error("Missing edge for input", input.name, "node id:", node.id);
+      continue;
+    }
+
+    const outputValue =
+      enviroment.phases[connectedEdge.source].outputs[
+        connectedEdge.sourceHandle!
+      ];
+
+    enviroment.phases[node.id].inputs[input.name] = outputValue;
   }
 };
 
@@ -246,6 +276,9 @@ const createExecutionEnviroment = (
 ): ExecutionEnviromentType<any> => {
   return {
     getInput: (name: string) => enviroment.phases[node.id]?.inputs[name],
+    setOutput: (name: string, value: string) => {
+      enviroment.phases[node.id].outputs[name] = value;
+    },
     getBrowser: () => enviroment.browser,
     setBrowser: (browser: Browser) => (enviroment.browser = browser),
 

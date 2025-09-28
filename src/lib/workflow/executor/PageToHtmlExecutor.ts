@@ -6,6 +6,7 @@ export const pageToHtlmExecutor = async (
 ): Promise<boolean> => {
   try {
     const html = await enviroment.getPage()!.content();
+    enviroment.setOutput("Html", html);
     console.log(`@PAGE:`, html);
 
     return true;
