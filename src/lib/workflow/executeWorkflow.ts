@@ -9,9 +9,11 @@ import { WorkflowExecution, Prisma, ExecutionPhase } from "@prisma/client";
 import { waitFor } from "../helper/waitFor";
 import { AppNode } from "@/types/appNodeType";
 import { TaskRegistry } from "./task/registry";
-import { TaskType } from "@/types/taskType";
+import { TaskParamType, TaskType } from "@/types/taskType";
 import { ExecutorRegistry } from "./executor/executorRegistry";
-import { EnviromentType } from "@/types/executorType";
+import { EnviromentType, ExecutionEnviromentType } from "@/types/executorType";
+import { LaunchBrowserTask } from "./task/launchBrowser";
+import { Browser, Page } from "puppeteer";
 
 type ExecutionWithRelations = Prisma.WorkflowExecutionGetPayload<{
   include: { workflow: true; phases: true };
@@ -69,7 +71,8 @@ export const executeWorkflow = async (executionId: string) => {
     executionFailed,
     creaditsConsumed
   );
-  // revalidatePath("/workflows/runs");
+
+  await cleanupEnviroment(enviroment);
 };
 
 // ===============================================FUNCTION===========
@@ -132,10 +135,14 @@ const executeWorkflowPhase = async (
     },
     data: {
       status: ExecutionPhasesStatus.RUNNING,
+      startedAt: startedAt,
+      inputs: JSON.stringify(enviroment.phases[node.id].inputs),
     },
   });
 
   const creaditsRequired = TaskRegistry[node.data.type].credits;
+  // thêm logging để dễ debug
+  console.log(`Starting phase ${phase.id} (${phase.name}) node ${node.id}`);
 
   const success = await executePhase(phase, node, enviroment);
   // TODO: decrement user balance
@@ -210,13 +217,19 @@ const executePhase = async (
   if (!runFn) {
     return false;
   }
-  return await runFn(enviroment.phases[node.id]);
+
+  const executionEnviroment: ExecutionEnviromentType<any> =
+    createExecutionEnviroment(node, enviroment);
+  return await runFn(executionEnviroment);
 };
 
 const setupEnviromentForPhase = (node: AppNode, enviroment: EnviromentType) => {
   enviroment.phases[node.id] = { inputs: {}, outputs: {} };
-  const inputsDefinition = TaskRegistry[node.data.type].inputs;
-  for (const input of inputsDefinition) {
+  const inputs = TaskRegistry[node.data.type].inputs;
+  for (const input of inputs) {
+    if (input.type === TaskParamType.BROWSER_INSTANCE) {
+      continue;
+    }
     const inputValue = node.data.inputs[input.name];
     if (inputValue) {
       enviroment.phases[node.id].inputs[input.name] = inputValue;
@@ -224,5 +237,28 @@ const setupEnviromentForPhase = (node: AppNode, enviroment: EnviromentType) => {
     }
 
     // Get input value fron output in the enviroment
+  }
+};
+
+const createExecutionEnviroment = (
+  node: AppNode,
+  enviroment: EnviromentType
+): ExecutionEnviromentType<any> => {
+  return {
+    getInput: (name: string) => enviroment.phases[node.id]?.inputs[name],
+    getBrowser: () => enviroment.browser,
+    setBrowser: (browser: Browser) => (enviroment.browser = browser),
+
+    getPage: () => enviroment.page,
+    setPage: (page: Page) => (enviroment.page = page),
+  };
+};
+
+const cleanupEnviroment = async (enviroment: EnviromentType) => {
+  // close enviroment
+  if (enviroment.browser) {
+    await enviroment.browser
+      .close()
+      .catch((err) => console.error("cannot close browser, reason: ", err));
   }
 };

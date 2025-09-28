@@ -21,18 +21,13 @@ export const ExtractTextFromHtml = {
       variant: "textarea",
     },
     { name: "Selector", type: TaskParamType.STRING, required: true },
-  ],
+  ] as const,
   outputs: [
     {
       name: "Extracted text",
       type: TaskParamType.STRING,
     },
-  ],
+  ] as const,
 } satisfies WorkflowTask;
-// co phai chinh tailwindCss k?
-
-const LaunchBrowser = (props: Props) => {
-  return <div>LaunchBrowser</div>;
-};
 
 // export default LaunchBrowser;

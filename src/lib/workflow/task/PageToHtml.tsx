@@ -20,19 +20,15 @@ export const PageToHtml = {
       type: TaskParamType.BROWSER_INSTANCE,
       required: true,
     },
-  ],
+  ] as const,
   outputs: [
     {
       name: "Html",
       type: TaskParamType.STRING,
     },
     { name: "Web page", type: TaskParamType.BROWSER_INSTANCE },
-  ],
+  ] as const,
 } satisfies WorkflowTask;
 // co phai chinh tailwindCss k?
-
-const LaunchBrowser = (props: Props) => {
-  return <div>LaunchBrowser</div>;
-};
 
 // export default LaunchBrowser;
