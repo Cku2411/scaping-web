@@ -17,5 +17,12 @@ export const getWorkflowPhaseDetail = async (phaseId: string) => {
         userId: user.id,
       },
     },
+    include: {
+      logs: {
+        orderBy: {
+          timestamp: "asc",
+        },
+      },
+    },
   });
 };
