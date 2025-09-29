@@ -10,8 +10,8 @@ export const pageToHtlmExecutor = async (
     console.log(`@PAGE:`, html);
 
     return true;
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    enviroment.log.error(error.mesage);
     return false;
   }
 };

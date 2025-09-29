@@ -15,6 +15,8 @@ import { EnviromentType, ExecutionEnviromentType } from "@/types/executorType";
 import { LaunchBrowserTask } from "./task/launchBrowser";
 import { Browser, Page } from "puppeteer";
 import { Edge } from "@xyflow/react";
+import { LogCollector } from "@/types/LogCollector";
+import { createLogCollector } from "../log";
 
 type ExecutionWithRelations = Prisma.WorkflowExecutionGetPayload<{
   include: { workflow: true; phases: true };
@@ -127,6 +129,8 @@ const executeWorkflowPhase = async (
   enviroment: EnviromentType,
   edges: Edge[]
 ) => {
+  const logCollector = createLogCollector();
+
   const startedAt = new Date();
 
   const node = JSON.parse(phase.node) as AppNode;
@@ -148,33 +152,47 @@ const executeWorkflowPhase = async (
   // thêm logging để dễ debug
   console.log(`Starting phase ${phase.id} (${phase.name}) node ${node.id}`);
 
-  const success = await executePhase(phase, node, enviroment);
+  const success = await executePhase(phase, node, enviroment, logCollector);
   const outputs = enviroment.phases[node.id].outputs;
   // TODO: decrement user balance
 
-  await finalizePhase(phase.id, success, outputs);
+  await finalizePhase(phase.id, success, outputs, logCollector);
   return { success };
 };
 
 const finalizePhase = async (
   phaseId: string,
   success: boolean,
-  outputs: any
+  outputs: any,
+  logs: LogCollector
 ) => {
   const finalStatus = success
-    ? ExecutionPhasesStatus.COMPETED
+    ? ExecutionPhasesStatus.COMPLETED
     : ExecutionPhasesStatus.FAILED;
 
-  await db.executionPhase.update({
-    where: {
-      id: phaseId,
-    },
-    data: {
-      status: finalStatus,
-      completedAt: new Date(),
-      outputs: JSON.stringify(outputs),
-    },
-  });
+  await db.executionPhase
+    .update({
+      where: {
+        id: phaseId,
+      },
+      data: {
+        status: finalStatus,
+        completedAt: new Date(),
+        outputs: JSON.stringify(outputs),
+        logs: {
+          createMany: {
+            data: logs.getAll().map((log) => ({
+              message: log.message,
+              logLevel: log.level,
+              timestamp: log.timestamp,
+            })),
+          },
+        },
+      },
+    })
+    .catch((err) => {
+      console.error(`Failed to finalize phase ${phaseId}:`, err);
+    });
 };
 
 const finalizeWorkflowExecution = async (
@@ -220,7 +238,8 @@ const finalizeWorkflowExecution = async (
 const executePhase = async (
   phase: ExecutionPhase,
   node: AppNode,
-  enviroment: EnviromentType
+  enviroment: EnviromentType,
+  logCollector: LogCollector
 ): Promise<boolean> => {
   const runFn = ExecutorRegistry[node.data.type];
 
@@ -229,7 +248,7 @@ const executePhase = async (
   }
 
   const executionEnviroment: ExecutionEnviromentType<any> =
-    createExecutionEnviroment(node, enviroment);
+    createExecutionEnviroment(node, enviroment, logCollector);
   return await runFn(executionEnviroment);
 };
 
@@ -272,7 +291,8 @@ const setupEnviromentForPhase = (
 
 const createExecutionEnviroment = (
   node: AppNode,
-  enviroment: EnviromentType
+  enviroment: EnviromentType,
+  logCollector: LogCollector
 ): ExecutionEnviromentType<any> => {
   return {
     getInput: (name: string) => enviroment.phases[node.id]?.inputs[name],
@@ -284,6 +304,8 @@ const createExecutionEnviroment = (
 
     getPage: () => enviroment.page,
     setPage: (page: Page) => (enviroment.page = page),
+
+    log: logCollector,
   };
 };
 

@@ -23,8 +23,8 @@ export const LaunchBrowserExecutor = async (
     enviroment.setPage(page);
 
     console.log(`Done add page, return True`);
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    enviroment.log.error(error.mesage);
     return false;
   }
   return true;
