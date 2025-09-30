@@ -12,6 +12,7 @@ export const LaunchBrowserExecutor = async (
     const browser = await puppeteer.launch({
       headless: true,
     });
+    enviroment.log.info(`Browser started successfully`);
     enviroment.setBrowser(browser);
     const page = await browser.newPage();
     await page.goto(websiteUrl);
@@ -21,8 +22,7 @@ export const LaunchBrowserExecutor = async (
 
     // add Page
     enviroment.setPage(page);
-
-    console.log(`Done add page, return True`);
+    enviroment.log.info(`Done add page, return True`);
   } catch (error: any) {
     enviroment.log.error(error.mesage);
     return false;
