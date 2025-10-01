@@ -11,7 +11,7 @@ import {
   LucideIcon,
   WorkflowIcon,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -44,6 +44,7 @@ import { log } from "console";
 import { cn } from "@/lib/utils";
 import { LogLevel } from "@/types/LogCollector";
 import PhaseStatusBadge from "./PhaseStatusBadge";
+import { useQuery } from "@tanstack/react-query";
 
 type ExecutionData = Awaited<ReturnType<typeof getWorkflowExecutionWithPhases>>;
 
@@ -59,6 +60,27 @@ const ExecutionViewer = ({ initialData }: Props) => {
 
   const isRunning =
     executionQuery.data?.status === WorkflowExecutionStatus.RUNNING;
+
+  useEffect(() => {
+    // while running we auto-select the current running phase in the sidebar, so we need to update setSelectedPhase without clicking.
+    // get phases
+    const phases = executionQuery.data?.phases || [];
+    if (isRunning) {
+      // select the last executed phase
+      const phaseToSelect = phases.toSorted((a, b) =>
+        a.startedAt! > b.startedAt! ? -1 : 1
+      )[0];
+
+      setSelectedPhase(phaseToSelect.id);
+      return;
+    }
+
+    const phaseToSelect = phases.toSorted((a, b) =>
+      a.completedAt! > b.completedAt! ? -1 : 1
+    )[0];
+
+    setSelectedPhase(phaseToSelect.id);
+  }, [executionQuery.data?.phases, isRunning, setSelectedPhase]);
 
   const duration = datesToDurationString(
     executionQuery.data?.completedAt,

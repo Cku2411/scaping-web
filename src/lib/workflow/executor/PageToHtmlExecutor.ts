@@ -10,7 +10,7 @@ export const pageToHtlmExecutor = async (
 
     return true;
   } catch (error: any) {
-    enviroment.log.error(error.mesage);
+    enviroment.log.error(error.message);
     return false;
   }
 };

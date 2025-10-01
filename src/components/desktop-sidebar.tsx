@@ -18,6 +18,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
+import UserAvailableCreditBadge from "./UserAvailableCreditBadge";
 
 type Props = {};
 const routes = [
@@ -53,6 +54,9 @@ const DesktopSidebar = (props: Props) => {
     <div className="hidden md:block min-w-[280px] max-w-[280px] h-screen overflow-hidden w-full bg-primary/5 dark:bg-secondary/30 dark:text-foreground text-muted-foreground border-r-2 border-separate">
       <div className=" flex items-center justify-center gap-2 border-b-[1px] border-separate p-4 ">
         <Logo />
+      </div>
+      <div className="p-2">
+        <UserAvailableCreditBadge />
       </div>
       <div className="flex flex-col p-2">
         {routes.map((route, idx) => (
@@ -102,6 +106,7 @@ export const MobileSideBar = () => {
                 <Logo />
               </SheetTitle>
             </SheetHeader>
+            <UserAvailableCreditBadge />
 
             <div className="flex flex-col gap-1">
               {routes.map((route, idx) => (

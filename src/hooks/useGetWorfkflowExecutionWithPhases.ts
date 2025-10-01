@@ -13,9 +13,9 @@ export const useGetWorkflowExecutionWithPhase = (
     queryKey: ["execution", initialData?.id],
     initialData,
 
-    queryFn: () => getWorkflowExecutionWithPhases(initialData!.id),
-    refetchInterval: (q) =>
-      q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 1000 : false,
+    queryFn: async () => await getWorkflowExecutionWithPhases(initialData!.id),
+    // refetchInterval: (q) =>
+    //   q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 1000 : false,
   });
 
   return query;
