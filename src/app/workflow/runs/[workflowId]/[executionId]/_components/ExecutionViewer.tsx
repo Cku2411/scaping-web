@@ -18,7 +18,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { datesToDurationString } from "@/lib/helper/date";
 import { GetPhasesTotalCost } from "@/lib/helper/phases";
-import { WorkflowExecutionStatus } from "@/types/workfowTypes";
+import {
+  ExecutionPhasesStatus,
+  WorkflowExecutionStatus,
+} from "@/types/workfowTypes";
 import { useGetWorkflowPhaseDetails } from "@/hooks/useGetWorkflowPhaseDetails";
 import {
   Card,
@@ -40,6 +43,7 @@ import {
 import { log } from "console";
 import { cn } from "@/lib/utils";
 import { LogLevel } from "@/types/LogCollector";
+import PhaseStatusBadge from "./PhaseStatusBadge";
 
 type ExecutionData = Awaited<ReturnType<typeof getWorkflowExecutionWithPhases>>;
 
@@ -132,7 +136,9 @@ const ExecutionViewer = ({ initialData }: Props) => {
                   <Badge variant={"outline"}>{index + 1}</Badge>
                   <p className="font-semibold">{phase.name}</p>
                 </div>
-                <p className="text-xs text-muted-foreground ">{phase.status}</p>
+                <PhaseStatusBadge
+                  status={phase.status as ExecutionPhasesStatus}
+                />
               </Button>
             );
           })}
