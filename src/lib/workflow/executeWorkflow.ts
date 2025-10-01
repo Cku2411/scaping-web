@@ -17,6 +17,7 @@ import { Browser, Page } from "puppeteer";
 import { Edge } from "@xyflow/react";
 import { LogCollector } from "@/types/LogCollector";
 import { createLogCollector } from "../log";
+import { decrementCredits } from "@/actions/billing/decrementCredits";
 
 type ExecutionWithRelations = Prisma.WorkflowExecutionGetPayload<{
   include: { workflow: true; phases: true };
@@ -38,16 +39,7 @@ export const executeWorkflow = async (executionId: string) => {
   const edges = JSON.parse(execution.definition).edges as Edge[];
 
   const enviroment: EnviromentType = {
-    phases: {
-      // launchBrowser: {
-      //   inputs: {
-      //     websiteUrl: "www.google.com",
-      //   },
-      //   outputs: {
-      //     browser: "PuppetterInstance",
-      //   },
-      // },
-    },
+    phases: {},
   };
 
   // TODO : initialize workflow execution
@@ -56,11 +48,18 @@ export const executeWorkflow = async (executionId: string) => {
 
   //   TODO : initialize phases status
 
-  const creaditsConsumed = 10;
-
+  let creditsConsumed = 0;
   let executionFailed = false;
+
   for (const phase of execution.phases) {
-    const phaseExecution = await executeWorkflowPhase(phase, enviroment, edges);
+    const phaseExecution = await executeWorkflowPhase(
+      phase,
+      enviroment,
+      edges,
+      execution.userId
+    );
+
+    creditsConsumed += phaseExecution.creditsConsumed;
     if (!phaseExecution.success) {
       executionFailed = true;
       break;
@@ -74,7 +73,7 @@ export const executeWorkflow = async (executionId: string) => {
     executionId,
     execution.workflowId,
     executionFailed,
-    creaditsConsumed
+    creditsConsumed
   );
 
   await cleanupEnviroment(enviroment);
@@ -127,7 +126,8 @@ const initializePhasesStatuses = async (execution: ExecutionWithRelations) => {
 const executeWorkflowPhase = async (
   phase: ExecutionPhase,
   enviroment: EnviromentType,
-  edges: Edge[]
+  edges: Edge[],
+  userId: string
 ) => {
   const logCollector = createLogCollector();
 
@@ -148,23 +148,36 @@ const executeWorkflowPhase = async (
     },
   });
 
-  const creaditsRequired = TaskRegistry[node.data.type].credits;
+  const creditsRequired = TaskRegistry[node.data.type].credits;
+
+  let success = await decrementCredits(userId, creditsRequired, logCollector);
+  const creditsConsumed = success ? creditsRequired : 0;
   // thêm logging để dễ debug
   console.log(`Starting phase ${phase.id} (${phase.name}) node ${node.id}`);
 
-  const success = await executePhase(phase, node, enviroment, logCollector);
+  if (success) {
+    // we can execute the phase if the creadit are sufficient
+    success = await executePhase(phase, node, enviroment, logCollector);
+  }
   const outputs = enviroment.phases[node.id].outputs;
   // TODO: decrement user balance
 
-  await finalizePhase(phase.id, success, outputs, logCollector);
-  return { success };
+  await finalizePhase(
+    phase.id,
+    success,
+    outputs,
+    logCollector,
+    creditsConsumed
+  );
+  return { success, creditsConsumed };
 };
 
 const finalizePhase = async (
   phaseId: string,
   success: boolean,
   outputs: any,
-  logs: LogCollector
+  logs: LogCollector,
+  creditsConsumed: number
 ) => {
   const finalStatus = success
     ? ExecutionPhasesStatus.COMPLETED
@@ -179,6 +192,7 @@ const finalizePhase = async (
         status: finalStatus,
         completedAt: new Date(),
         outputs: JSON.stringify(outputs),
+        creaditsConsumed: creditsConsumed,
         logs: {
           createMany: {
             data: logs.getAll().map((log) => ({

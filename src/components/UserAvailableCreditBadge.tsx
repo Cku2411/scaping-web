@@ -29,7 +29,9 @@ const UserAvailableCreditBadge = (props: Props) => {
           <ReactCountUpWrapper value={getUserCreditsQuery.data} />
         )}
 
-        {!getUserCreditsQuery.isLoading && !getUserCreditsQuery.data && "-"}
+        {!getUserCreditsQuery.isLoading &&
+          getUserCreditsQuery.data === undefined &&
+          "-"}
       </span>
     </Link>
   );

@@ -45,6 +45,7 @@ import { cn } from "@/lib/utils";
 import { LogLevel } from "@/types/LogCollector";
 import PhaseStatusBadge from "./PhaseStatusBadge";
 import { useQuery } from "@tanstack/react-query";
+import ReactCountUpWrapper from "@/components/ReactCountUpWrapper";
 
 type ExecutionData = Awaited<ReturnType<typeof getWorkflowExecutionWithPhases>>;
 
@@ -128,7 +129,7 @@ const ExecutionViewer = ({ initialData }: Props) => {
           <ExecutionLabel
             icon={CoinsIcon}
             label={"Creadit consumed"}
-            value={creaditsConsumed}
+            value={<ReactCountUpWrapper value={creaditsConsumed} />}
           />
         </div>
 
@@ -193,7 +194,7 @@ const ExecutionViewer = ({ initialData }: Props) => {
                   <CoinsIcon size={18} className="stroke-muted-foreground" />
                   <span>Credits</span>
                 </div>
-                <span>TODO</span>
+                <span>{phaseDetailQuery.data.creaditsConsumed}</span>
               </Badge>
 
               <Badge variant={"outline"} className="space-x-4">
