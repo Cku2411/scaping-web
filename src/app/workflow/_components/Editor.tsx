@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Workflow } from "@prisma/client";
 import { ReactFlowProvider } from "@xyflow/react";

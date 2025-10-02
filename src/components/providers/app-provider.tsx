@@ -10,13 +10,27 @@ type Props = {
 };
 
 const AppProvider = ({ children }: Props) => {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 1,
+            refetchOnWindowFocus: false,
+            staleTime: 1000 * 60,
+          },
+          mutations: { retry: 0 },
+        },
+      })
+  );
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute={"class"} defaultTheme="system" enableSystem>
         {children}
       </ThemeProvider>
-      <ReactQueryDevtools />
+      {process.env.NODE_ENV === "development" && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
     </QueryClientProvider>
   );
 };
