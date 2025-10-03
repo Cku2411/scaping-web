@@ -46,7 +46,7 @@ const ExecutionsTableWrapper = async ({
   }
   if (executions.length === 0) {
     return (
-      <div className="w-full py-6">
+      <div className="w-full py-6 container">
         <div className=" flex items-center flex-col gap-2 justify-center h-full w-full">
           <div className="rounded-full bg-accent size-20 flex items-center justify-center">
             <InboxIcon size={40} className="stroke-primary" />
@@ -64,5 +64,9 @@ const ExecutionsTableWrapper = async ({
     );
   }
 
-  return <ExecutionTable workflowId={workflowId} initialData={executions} />;
+  return (
+    <div className="py-6 w-full container mx-auto">
+      <ExecutionTable workflowId={workflowId} initialData={executions} />
+    </div>
+  );
 };

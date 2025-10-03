@@ -101,7 +101,14 @@ const ExecutionViewer = ({ initialData }: Props) => {
           <ExecutionLabel
             icon={CircleDashedIcon}
             label={"Status"}
-            value={executionQuery.data?.status}
+            value={
+              <div className="font-semibold flex capitalize gap-2 items-center">
+                <PhaseStatusBadge
+                  status={executionQuery.data?.status as ExecutionPhasesStatus}
+                />
+                <span>{executionQuery.data?.status}</span>
+              </div>
+            }
           />
 
           <ExecutionLabel

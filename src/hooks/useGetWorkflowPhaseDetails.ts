@@ -8,7 +8,7 @@ export const useGetWorkflowPhaseDetails = (phaseId: string | null) => {
     enabled: phaseId !== null,
     queryFn: async () => {
       if (!phaseId) return null;
-      return getWorkflowPhaseDetail(phaseId);
+      return await getWorkflowPhaseDetail(phaseId);
     },
   });
 

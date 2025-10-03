@@ -16,6 +16,7 @@ import ExecutionStatusIndicator from "./ExecutionStatusIndicator";
 import { WorkflowExecutionStatus } from "@/types/workfowTypes";
 import { CoinsIcon } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useRouter } from "next/navigation";
 
 type InitialDataType = Awaited<ReturnType<typeof getWorkflowExecutions>>;
 
@@ -32,6 +33,8 @@ const ExecutionTable = ({
     queryFn: () => getWorkflowExecutions(workflowId),
     refetchInterval: 5000,
   });
+
+  const router = useRouter();
 
   return (
     <div className="border rounded-lg shadow-md overflow-auto">
@@ -60,7 +63,15 @@ const ExecutionTable = ({
               });
 
             return (
-              <TableRow key={execution.id}>
+              <TableRow
+                key={execution.id}
+                className="cursor-pointer"
+                onClick={() =>
+                  router.push(
+                    `/workflow/runs/${execution.workflowId}/${execution.id}`
+                  )
+                }
+              >
                 <TableCell>
                   <div className="flex flex-col">
                     <span className="font-semibold">{execution.id}</span>
