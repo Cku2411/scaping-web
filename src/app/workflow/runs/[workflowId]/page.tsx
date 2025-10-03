@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import Topbar from "../../_components/topbar/Topbar";
 import { getWorkflowExecutions } from "@/actions/workflows/getWorkflowExecutions";
 import { InboxIcon, Loader2Icon } from "lucide-react";
+import ExecutionTable from "./_components/ExecutionTable";
 
 const ExecutionPage = async ({
   params,
@@ -26,7 +27,7 @@ const ExecutionPage = async ({
           </div>
         }
       >
-        <ExecutionsTable workflowId={workflowId} />
+        <ExecutionsTableWrapper workflowId={workflowId} />
       </Suspense>
     </div>
   );
@@ -34,7 +35,11 @@ const ExecutionPage = async ({
 
 export default ExecutionPage;
 
-const ExecutionsTable = async ({ workflowId }: { workflowId: string }) => {
+const ExecutionsTableWrapper = async ({
+  workflowId,
+}: {
+  workflowId: string;
+}) => {
   const executions = await getWorkflowExecutions(workflowId);
   if (!executions) {
     return <div>No data</div>;
@@ -59,5 +64,5 @@ const ExecutionsTable = async ({ workflowId }: { workflowId: string }) => {
     );
   }
 
-  return <pre>{JSON.stringify(executions, null, 4)}</pre>;
+  return <ExecutionTable workflowId={workflowId} initialData={executions} />;
 };
