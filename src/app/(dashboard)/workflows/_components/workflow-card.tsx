@@ -11,14 +11,14 @@ import WorkflowActions from "./workflow-actions";
 
 type Props = { workflow: Workflow };
 const statusColors = {
-  [WorkflowStatus.DRAFT]: "bg-yellow-400 text-yellow-600",
+  [WorkflowStatus.DRAFT]: "bg-neutral-200 text-neutral-600",
   [WorkflowStatus.PUBLISHED]: "bg-primary",
 };
 
 const WorkflowCard = ({ workflow }: Props) => {
   const isDraft = workflow.status === WorkflowStatus.DRAFT;
   return (
-    <Card className="border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-md dark:shadow-primary/30">
+    <Card className="border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-md dark:shadow-primary/30 ">
       <CardContent className="p-4 flex items-center justify-between h-[100px]">
         <div className="flex items-center justify-end space-x-3">
           <div

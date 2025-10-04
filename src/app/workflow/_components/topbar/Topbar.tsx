@@ -7,15 +7,23 @@ import { ChevronLeftIcon } from "lucide-react";
 import SaveBtn from "./SaveBtn";
 import ExecuteBtn from "./ExecuteBtn";
 import NavigationTabs from "./NavigationTabs";
+import PublishBtn from "./PublishBtn";
 
 type Props = {
   title: string;
   subTitle?: string;
   WorkflowId: string;
   hideButton?: boolean;
+  isPublished?: boolean;
 };
 
-const Topbar = ({ title, subTitle, WorkflowId, hideButton }: Props) => {
+const Topbar = ({
+  title,
+  subTitle,
+  WorkflowId,
+  hideButton,
+  isPublished,
+}: Props) => {
   const router = useRouter();
   return (
     <header className="flex p-2 border-b-2 border-separate justify-between w-full h-[60px] sticky top-0 bg-background z-10">
@@ -39,7 +47,13 @@ const Topbar = ({ title, subTitle, WorkflowId, hideButton }: Props) => {
         {!hideButton && (
           <>
             <ExecuteBtn workflowId={WorkflowId} />
-            <SaveBtn workflowId={WorkflowId} />
+
+            {!isPublished && (
+              <>
+                <SaveBtn workflowId={WorkflowId} />
+                <PublishBtn workflowId={WorkflowId} />
+              </>
+            )}
           </>
         )}
       </div>

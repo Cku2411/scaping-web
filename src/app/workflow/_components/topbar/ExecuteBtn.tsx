@@ -46,6 +46,7 @@ const ExecuteBtn = ({ workflowId }: Props) => {
       }}
     >
       <PlayIcon size={16} className="stroke-orange-400" />
+      Execute
     </Button>
   );
 };
