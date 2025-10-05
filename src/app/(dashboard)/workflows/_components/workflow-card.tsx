@@ -3,11 +3,20 @@ import React from "react";
 import { Workflow } from "@prisma/client";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { WorkflowStatus } from "@/types/workfowTypes";
-import { FileTextIcon, PlayIcon, ShuffleIcon } from "lucide-react";
+import {
+  CornerDownRightIcon,
+  FileTextIcon,
+  MoveRightIcon,
+  PlayIcon,
+  ShuffleIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import WorkflowActions from "./workflow-actions";
+import RunBtn from "./RunBtn";
+import SchedulerDialog from "./SchedulerDialog";
+import TooltipWrapper from "@/components/tooltipWrapper";
 
 type Props = { workflow: Workflow };
 const statusColors = {
@@ -47,10 +56,13 @@ const WorkflowCard = ({ workflow }: Props) => {
                 </span>
               )}
             </h3>
+            <ScheduleSection isDraft={isDraft} />
           </div>
         </div>
 
         <div className="flex items-center space-x-2">
+          {!isDraft && <RunBtn workflowId={workflow.id} />}
+
           <Link
             href={`/workflow/editor/${workflow.id}`}
             className={cn(
@@ -75,3 +87,17 @@ const WorkflowCard = ({ workflow }: Props) => {
 };
 
 export default WorkflowCard;
+
+const ScheduleSection = ({ isDraft }: { isDraft: boolean }) => {
+  if (isDraft) return null;
+  return (
+    <div className="flex items-center gap-2">
+      <CornerDownRightIcon className="size-4 text-muted-foreground" />
+      <SchedulerDialog />
+      <MoveRightIcon />
+      <TooltipWrapper content="Credit consumption for full run">
+        <div className="flex items-center gap-3"></div>
+      </TooltipWrapper>
+    </div>
+  );
+};

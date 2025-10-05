@@ -9,6 +9,7 @@ import {
   WorkflowExecutionStatus,
   WorkflowExecutionPlan,
   WorkflowExecutionTrigger,
+  WorkflowStatus,
 } from "@/types/workfowTypes";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -40,22 +41,32 @@ export const RunWorkflow = async (form: {
   }
 
   let executionPlan: WorkflowExecutionPlan;
-  if (!flowDefinition) {
-    throw new Error("flow definition is not defined");
-  }
+  let workflowDefinition = flowDefinition;
 
-  const flow = JSON.parse(flowDefinition);
-  const result = FlowToExecutionPlan(flow.nodes, flow.edges);
-  if (result.error) {
-    throw new Error("Flow definition not valid");
-  }
+  if (workflow.status === WorkflowStatus.PUBLISHED) {
+    if (!workflow.executionPlan) {
+      throw new Error("No execution plan found in published workflow");
+    }
 
-  if (!result.executionPlan) {
-    throw new Error("No execution plan generated");
-  }
+    executionPlan = JSON.parse(workflow.executionPlan);
+    workflowDefinition = workflow.definition;
+  } else {
+    if (!flowDefinition) {
+      throw new Error("flow definition is not defined");
+    }
 
-  executionPlan = result.executionPlan;
-  console.log({ executionPlan });
+    const flow = JSON.parse(flowDefinition);
+    const result = FlowToExecutionPlan(flow.nodes, flow.edges);
+    if (result.error) {
+      throw new Error("Flow definition not valid");
+    }
+
+    if (!result.executionPlan) {
+      throw new Error("No execution plan generated");
+    }
+
+    executionPlan = result.executionPlan;
+  }
 
   // Create execution
   const execution = await db.workflowExecution.create({
@@ -65,7 +76,7 @@ export const RunWorkflow = async (form: {
       trigger: WorkflowExecutionTrigger.MANUAL,
       status: WorkflowExecutionStatus.PENDING,
       startedAt: new Date(),
-      definition: flowDefinition,
+      definition: workflowDefinition,
       phases: {
         create: executionPlan.flatMap((phase) => {
           return phase.nodes.flatMap((node) => {
