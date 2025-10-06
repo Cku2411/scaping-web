@@ -4,6 +4,7 @@ import { Workflow } from "@prisma/client";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { WorkflowStatus } from "@/types/workfowTypes";
 import {
+  CoinsIcon,
   CornerDownRightIcon,
   FileTextIcon,
   MoveRightIcon,
@@ -17,6 +18,7 @@ import WorkflowActions from "./workflow-actions";
 import RunBtn from "./RunBtn";
 import SchedulerDialog from "./SchedulerDialog";
 import TooltipWrapper from "@/components/tooltipWrapper";
+import { Badge } from "@/components/ui/badge";
 
 type Props = { workflow: Workflow };
 const statusColors = {
@@ -56,7 +58,12 @@ const WorkflowCard = ({ workflow }: Props) => {
                 </span>
               )}
             </h3>
-            <ScheduleSection isDraft={isDraft} />
+            <ScheduleSection
+              isDraft={isDraft}
+              creditsCost={workflow.creditsCost}
+              workflowId={workflow.id}
+              cron={workflow.cron}
+            />
           </div>
         </div>
 
@@ -88,15 +95,35 @@ const WorkflowCard = ({ workflow }: Props) => {
 
 export default WorkflowCard;
 
-const ScheduleSection = ({ isDraft }: { isDraft: boolean }) => {
+const ScheduleSection = ({
+  isDraft,
+  creditsCost,
+  workflowId,
+  cron,
+}: {
+  isDraft: boolean;
+  creditsCost: number;
+  workflowId: string;
+  cron: string | null;
+}) => {
   if (isDraft) return null;
   return (
     <div className="flex items-center gap-2">
       <CornerDownRightIcon className="size-4 text-muted-foreground" />
-      <SchedulerDialog />
+      <SchedulerDialog workflowId={workflowId} cron={cron} />
       <MoveRightIcon />
       <TooltipWrapper content="Credit consumption for full run">
-        <div className="flex items-center gap-3"></div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3">
+            <Badge
+              variant={"outline"}
+              className="space-x-2 text-muted-foreground rounded-sm"
+            >
+              <CoinsIcon className="size-4" />
+              <span className="text-sm">{creditsCost}</span>
+            </Badge>
+          </div>
+        </div>
       </TooltipWrapper>
     </div>
   );
