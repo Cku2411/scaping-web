@@ -5,7 +5,7 @@ export const useGetAvailabelCredits = () => {
   const query = useQuery({
     queryKey: ["user-available-credits"],
     queryFn: async () => await getAvailableCredits(),
-    refetchInterval: 30 * 1000,
+    // refetchInterval: 30 * 1000,
   });
 
   return query;

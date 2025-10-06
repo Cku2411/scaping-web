@@ -3,6 +3,7 @@
 import { db } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 import parser from "cron-parser";
+import { revalidatePath } from "next/cache";
 
 export const updateWorkflowCron = async ({
   id,
@@ -19,7 +20,7 @@ export const updateWorkflowCron = async ({
 
   try {
     const interval = parser.parseExpression(cron, { utc: true });
-    return await db.workflow.update({
+    await db.workflow.update({
       where: {
         id,
         userId: user.id,
@@ -35,4 +36,6 @@ export const updateWorkflowCron = async ({
 
     throw new Error("Invalid cron expression!");
   }
+
+  revalidatePath("/workflows");
 };

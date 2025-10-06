@@ -10,20 +10,30 @@ type Props = {
   children: React.ReactNode;
 };
 
+function makeQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 60 * 1000,
+      },
+    },
+  });
+}
+
+let browserQueryClient: QueryClient | undefined = undefined;
+
+function getQueryClient() {
+  if (typeof window === "undefined") {
+    return makeQueryClient();
+  } else {
+    if (!browserQueryClient) browserQueryClient = makeQueryClient();
+    return browserQueryClient;
+  }
+}
+
 const AppProvider = ({ children }: Props) => {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: 1,
-            refetchOnWindowFocus: false,
-            staleTime: 1000 * 60,
-          },
-          mutations: { retry: 0 },
-        },
-      })
-  );
+  const queryClient = getQueryClient();
+
   return (
     <QueryClientProvider client={queryClient}>
       <NextTopLoader color="#10b981" showSpinner={false} />
