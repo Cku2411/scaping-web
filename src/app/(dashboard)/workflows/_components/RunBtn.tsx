@@ -17,7 +17,7 @@ const RunBtn = ({ workflowId }: { workflowId: string }) => {
       className="flex items-center"
       disabled={isRunWorkflowPending}
       onClick={() => {
-        toast.loading("Scheduling run ...", { id: workflowId });
+        toast.loading("Scheduling run ...", { id: "flow-execution" });
         runWorkflowMutation(
           { workflowId },
           {

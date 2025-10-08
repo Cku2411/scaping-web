@@ -9,6 +9,7 @@ import {
 } from "@/types/workfowTypes";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { executeWorkflow } from "@/lib/workflow/executeWorkflow";
+import parser from "cron-parser";
 
 export const GET = async (request: NextRequest) => {
   const authHeader = request.headers.get("authorization");
@@ -67,35 +68,48 @@ export const GET = async (request: NextRequest) => {
       {
         error: "bad request",
       },
-      { status: 401 }
+      { status: 400 }
     );
   }
-  const execution = await db.workflowExecution.create({
-    data: {
-      workflowId,
-      userId: workflow.userId,
-      definition: workflow.definition,
-      status: WorkflowExecutionStatus.PENDING,
-      startedAt: new Date(),
-      trigger: WorkflowExecutionTrigger.CRON,
-      phases: {
-        create: executionPlan.flatMap((phase) => {
-          return phase.nodes.flatMap((node) => {
-            return {
-              userId: workflow.userId,
-              status: ExecutionPhasesStatus.CREATED,
-              number: phase.phase,
-              node: JSON.stringify(node),
-              name: TaskRegistry[node.data.type].label,
-            };
-          });
-        }),
-      },
-    },
-  });
 
-  await executeWorkflow(execution.id);
-  return new Response(null, { status: 200 });
+  try {
+    const cron = parser.parseExpression(workflow.cron!, { utc: true });
+    const nextRunAt = cron.next().toDate();
+
+    const execution = await db.workflowExecution.create({
+      data: {
+        workflowId,
+        userId: workflow.userId,
+        definition: workflow.definition,
+        status: WorkflowExecutionStatus.PENDING,
+        startedAt: new Date(),
+        trigger: WorkflowExecutionTrigger.CRON,
+        phases: {
+          create: executionPlan.flatMap((phase) => {
+            return phase.nodes.flatMap((node) => {
+              return {
+                userId: workflow.userId,
+                status: ExecutionPhasesStatus.CREATED,
+                number: phase.phase,
+                node: JSON.stringify(node),
+                name: TaskRegistry[node.data.type].label,
+              };
+            });
+          }),
+        },
+      },
+    });
+
+    await executeWorkflow(execution.id, nextRunAt);
+    return new Response(null, { status: 200 });
+  } catch (error) {
+    return Response.json(
+      {
+        error: "Internal server error",
+      },
+      { status: 500 }
+    );
+  }
 };
 
 const isValidSecret = (secret: string) => {

@@ -10,7 +10,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { datesToDurationString } from "@/lib/helper/date";
-import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import ExecutionStatusIndicator from "./ExecutionStatusIndicator";
 import { WorkflowExecutionStatus } from "@/types/workfowTypes";
@@ -22,18 +21,11 @@ type InitialDataType = Awaited<ReturnType<typeof getWorkflowExecutions>>;
 
 const ExecutionTable = ({
   workflowId,
-  initialData,
+  executions,
 }: {
   workflowId: string;
-  initialData: InitialDataType;
+  executions: InitialDataType;
 }) => {
-  const query = useQuery({
-    queryKey: ["executiions", workflowId],
-    initialData,
-    queryFn: () => getWorkflowExecutions(workflowId),
-    refetchInterval: 5000,
-  });
-
   const router = useRouter();
 
   return (
@@ -50,7 +42,7 @@ const ExecutionTable = ({
           </TableRow>
         </TableHeader>
         <TableBody className="gap-2 h-full overflow-auto">
-          {query.data.map((execution) => {
+          {executions.map((execution) => {
             const duration = datesToDurationString(
               execution.completedAt,
               execution.startedAt

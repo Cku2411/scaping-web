@@ -23,7 +23,10 @@ type ExecutionWithRelations = Prisma.WorkflowExecutionGetPayload<{
   include: { workflow: true; phases: true };
 }>;
 
-export const executeWorkflow = async (executionId: string) => {
+export const executeWorkflow = async (
+  executionId: string,
+  nextRunAt?: Date
+) => {
   const execution = await db.workflowExecution.findUnique({
     where: {
       id: executionId,
@@ -43,7 +46,11 @@ export const executeWorkflow = async (executionId: string) => {
   };
 
   // TODO : initialize workflow execution
-  await initializeWorkflowExecution(executionId, execution.workflowId);
+  await initializeWorkflowExecution(
+    executionId,
+    execution.workflowId,
+    nextRunAt
+  );
   await initializePhasesStatuses(execution);
 
   //   TODO : initialize phases status
@@ -83,7 +90,8 @@ export const executeWorkflow = async (executionId: string) => {
 
 const initializeWorkflowExecution = async (
   executionId: string,
-  workflowId: string
+  workflowId: string,
+  nextRunAt?: Date
 ) => {
   // update status
   await db.workflowExecution.update({
@@ -106,6 +114,7 @@ const initializeWorkflowExecution = async (
       lastRunAt: new Date(),
       lastRunStatus: WorkflowExecutionStatus.RUNNING,
       lastRunId: executionId,
+      ...(nextRunAt && { nextRunAt }),
     },
   });
 };
