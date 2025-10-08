@@ -8,3 +8,11 @@ export const createWorkflowFormSchema = z.object({
 export type CreateWorkFlowFormSchemaType = z.infer<
   typeof createWorkflowFormSchema
 >;
+
+export const duplicateWorkFlowFormSchema = createWorkflowFormSchema.extend({
+  workflowId: z.string(),
+});
+
+export type DuplicateWorkflowSchemaType = z.infer<
+  typeof duplicateWorkFlowFormSchema
+>;

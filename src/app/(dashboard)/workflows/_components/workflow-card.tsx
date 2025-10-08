@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import ExecutionStatusIndicator from "@/app/workflow/runs/[workflowId]/_components/ExecutionStatusIndicator";
 import { formatDistanceToNow, format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
+import DuplicateWorkflowDialog from "./duplicate-workflow-dialog";
 
 type Props = { workflow: Workflow };
 const statusColors = {
@@ -34,7 +35,7 @@ const statusColors = {
 const WorkflowCard = ({ workflow }: Props) => {
   const isDraft = workflow.status === WorkflowStatus.DRAFT;
   return (
-    <Card className="border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-md dark:shadow-primary/30 ">
+    <Card className="border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-md dark:shadow-primary/30 group/card ">
       <CardContent className="p-4 flex items-center justify-between h-[100px]">
         <div className="flex items-center justify-end space-x-3">
           <div
@@ -50,19 +51,23 @@ const WorkflowCard = ({ workflow }: Props) => {
             )}
           </div>
           <div>
-            <h3 className="text-base font-bold text-muted-foreground flex items-center">
-              <Link
-                href={`/workflow/editor/${workflow.id}`}
-                className="flex items-center hover:underline"
-              >
-                {workflow.name}
-              </Link>
-              {isDraft && (
-                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
-                  Draft
-                </span>
-              )}
-            </h3>
+            <TooltipWrapper content={workflow.description}>
+              <h3 className="text-base font-bold text-muted-foreground flex items-center">
+                <Link
+                  href={`/workflow/editor/${workflow.id}`}
+                  className="flex items-center hover:underline"
+                >
+                  {workflow.name}
+                </Link>
+                {isDraft && (
+                  <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                    Draft
+                  </span>
+                )}
+                <DuplicateWorkflowDialog workflowId={workflow.id} />
+              </h3>
+            </TooltipWrapper>
+
             <ScheduleSection
               isDraft={isDraft}
               creditsCost={workflow.creditsCost}
