@@ -57,7 +57,10 @@ const ExecutionViewer = ({ initialData }: Props) => {
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
   const executionQuery = useGetWorkflowExecutionWithPhase(initialData);
 
-  const phaseDetailQuery = useGetWorkflowPhaseDetails(selectedPhase);
+  const phaseDetailQuery = useGetWorkflowPhaseDetails(
+    selectedPhase,
+    executionQuery.data?.status
+  );
 
   const isRunning =
     executionQuery.data?.status === WorkflowExecutionStatus.RUNNING;

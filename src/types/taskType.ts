@@ -21,6 +21,7 @@ export interface TaskParamInput {
   hideHandle?: boolean;
   value?: string;
   [key: string]: any;
+  options?: { label: string; value: string }[];
 }
 
 export interface TaskPramOutput {
