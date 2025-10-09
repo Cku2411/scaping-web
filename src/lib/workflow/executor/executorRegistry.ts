@@ -4,6 +4,8 @@ import { pageToHtlmExecutor } from "./PageToHtmlExecutor";
 import { ExecutionEnviromentType } from "@/types/executorType";
 import { WorkflowTask } from "@/types/workfowTypes";
 import { ExtractTextFromElementExecutor } from "./ExtractTextFromElementExecutor";
+import { FillInputExecutor } from "./FillInputExecutor";
+import { ClickElementExecutor } from "./ClickElementExecutor";
 
 type ExecutorFn<T extends WorkflowTask> = (
   enviroment: ExecutionEnviromentType<T>
@@ -17,4 +19,6 @@ export const ExecutorRegistry: RegistryType = {
   LAUNCH_BROWSER: LaunchBrowserExecutor,
   PAGE_TO_HTML: pageToHtlmExecutor,
   EXTRACT_TEXT_FROM_ELEMENT: ExtractTextFromElementExecutor,
+  FILL_INPUT: FillInputExecutor,
+  CLICK_ELEMENT: ClickElementExecutor,
 };

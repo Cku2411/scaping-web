@@ -71,9 +71,6 @@ export const executeWorkflow = async (
       executionFailed = true;
       break;
     }
-    // TODO: execute phaes
-
-    // TODO: clean up enviroment
   }
 
   await finalizeWorkflowExecution(
@@ -83,6 +80,7 @@ export const executeWorkflow = async (
     creditsConsumed
   );
 
+  await waitFor(4000);
   await cleanupEnviroment(enviroment);
 };
 
@@ -267,6 +265,7 @@ const executePhase = async (
   const runFn = ExecutorRegistry[node.data.type];
 
   if (!runFn) {
+    logCollector.error(`Not found executor for ${node.data.type}`);
     return false;
   }
 
