@@ -22,6 +22,4 @@ export const removeScheduleWorkflow = async (id: string) => {
       nextRunAt: null,
     },
   });
-
-  revalidatePath("/workflows");
 };

@@ -51,6 +51,4 @@ export const unPublishWorkflow = async (id: string) => {
       status: WorkflowStatus.DRAFT,
     },
   });
-
-  revalidatePath(`/workflow/editor/${id}`);
 };

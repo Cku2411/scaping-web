@@ -17,6 +17,4 @@ export const deleteWorkflow = async (id: string) => {
       userId: user.id,
     },
   });
-
-  revalidatePath("/workflows");
 };

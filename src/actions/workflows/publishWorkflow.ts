@@ -68,6 +68,4 @@ export const publishWorkflow = async ({
       status: WorkflowStatus.PUBLISHED,
     },
   });
-
-  revalidatePath(`/workflow/editor/${id}`);
 };

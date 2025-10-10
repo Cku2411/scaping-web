@@ -2,11 +2,7 @@
 import CustomDialogHeader from "@/components/custom-dialog-header";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import {
-  createWorkflowFormSchema,
-  CreateWorkFlowFormSchemaType,
-} from "@/schema/workflowFormSchema";
-import { Layers2Icon, Loader2 } from "lucide-react";
+import { Loader2, ShieldEllipsis } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -21,31 +17,35 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateWorkflow } from "@/hooks/useCreateWorkflow";
 import { toast } from "sonner";
+import {
+  createCredentialSchema,
+  CreateCredentialSchemaType,
+} from "@/schema/credentials";
+import { useCreateCredentials } from "@/hooks/useCreateCredentials";
 
 type Props = {
   triggerText?: string;
 };
 
-const CreateWorkflowDialog = ({ triggerText }: Props) => {
+const CreateCredentialsDialog = ({ triggerText }: Props) => {
   const [open, setOpen] = useState(false);
-  const { createWorkflowMutation, isPendingcreateWorkflow } =
-    useCreateWorkflow();
+  const { createCredentialsMutation, isPendingcreateCredentials } =
+    useCreateCredentials();
 
   // form
 
-  const form = useForm<CreateWorkFlowFormSchemaType>({
-    resolver: zodResolver(createWorkflowFormSchema),
-    defaultValues: { name: "", description: "" },
+  const form = useForm<CreateCredentialSchemaType>({
+    defaultValues: { name: "", value: "" },
+    resolver: zodResolver(createCredentialSchema),
   });
 
   const onWorkflowFormSubmit = useCallback(
-    (values: CreateWorkFlowFormSchemaType) => {
-      toast.loading("Creating workflow ...", { id: "create-workflow" });
-      createWorkflowMutation(values);
+    (values: CreateCredentialSchemaType) => {
+      toast.loading("Creating credentials ...", { id: "create-credentials" });
+      createCredentialsMutation(values);
     },
-    [createWorkflowMutation]
+    [createCredentialsMutation]
   );
 
   return (
@@ -57,13 +57,12 @@ const CreateWorkflowDialog = ({ triggerText }: Props) => {
       }}
     >
       <DialogTrigger asChild>
-        <Button>{triggerText ?? "Create workflow"}</Button>
+        <Button>{triggerText ?? "Create"}</Button>
       </DialogTrigger>
       <DialogContent className="px-0">
         <CustomDialogHeader
-          icon={Layers2Icon}
-          title={"Create workflow"}
-          subTitle={"Start building your workflow"}
+          icon={ShieldEllipsis}
+          title={"Create credentials"}
         />
         {/* form */}
         <div className="p-6">
@@ -86,7 +85,8 @@ const CreateWorkflowDialog = ({ triggerText }: Props) => {
                       <Input {...field} />
                     </FormControl>
                     <FormDescription>
-                      Choose a description and unique name
+                      Enter a unique an descriptive name for the credentials,
+                      this name will be user to identify the credentiasl
                     </FormDescription>
                   </FormItem>
                 )}
@@ -95,22 +95,19 @@ const CreateWorkflowDialog = ({ triggerText }: Props) => {
               {/* DESCRIPTION */}
               <FormField
                 control={form.control}
-                name="description"
+                name="value"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex gap-1 items-center">
-                      Description
-                      <p className="text-xs text-muted-foreground">
-                        (required)
-                      </p>
+                      Value
+                      <p className="text-xs text-primary">(required)</p>
                     </FormLabel>
                     <FormControl>
                       <Textarea className="resize-none" {...field} />
                     </FormControl>
                     <FormDescription>
-                      Provide a brief description of what your workflow does.{" "}
-                      <br /> This is optional but can help you remember the
-                      workflow's purpose
+                      Enter the value associated with this credentials
+                      <br /> this value will be securely encrypted and stored
                     </FormDescription>
                   </FormItem>
                 )}
@@ -119,9 +116,9 @@ const CreateWorkflowDialog = ({ triggerText }: Props) => {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={isPendingcreateWorkflow}
+                disabled={isPendingcreateCredentials}
               >
-                {!isPendingcreateWorkflow ? (
+                {!isPendingcreateCredentials ? (
                   "Proceed"
                 ) : (
                   <Loader2 className="animate-spin" />
@@ -135,4 +132,4 @@ const CreateWorkflowDialog = ({ triggerText }: Props) => {
   );
 };
 
-export default CreateWorkflowDialog;
+export default CreateCredentialsDialog;

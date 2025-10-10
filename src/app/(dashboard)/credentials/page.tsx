@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShieldIcon, ShieldOffIcon } from "lucide-react";
 import React, { Suspense } from "react";
+import CreateCredentialsDialog from "./_components/create-credentials-dialog";
 
 type Props = {};
 
@@ -15,10 +16,11 @@ const CredentialsPage = (props: Props) => {
           <h1 className="text-3xl font-bold">Credentials</h1>
           <p className="text-muted-foreground">Manage your credentials</p>
         </div>
+        <CreateCredentialsDialog />
       </div>
 
       <div>
-        <Alert>
+        <Alert className="my-4">
           <ShieldIcon className="size-4 stroke-primary" />
           <AlertTitle className="text-primary">Encryption</AlertTitle>
           <AlertDescription>
@@ -60,6 +62,7 @@ const UserCredentials = async () => {
               Click the button below to create your first credentials
             </p>
           </div>
+          <CreateCredentialsDialog triggerText="Create your first credentials" />
         </div>
       </Card>
     );
