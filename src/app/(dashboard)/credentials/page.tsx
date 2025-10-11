@@ -1,10 +1,13 @@
-import { getCredentialsForUser } from "@/actions/credentials/getCredentialsForUser";
+"use client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ShieldIcon, ShieldOffIcon } from "lucide-react";
+import { LockKeyholeIcon, ShieldIcon, ShieldOffIcon } from "lucide-react";
 import React, { Suspense } from "react";
 import CreateCredentialsDialog from "./_components/create-credentials-dialog";
+import { formatDistanceToNow } from "date-fns";
+import DeleteCredentialsDialog from "./_components/delete-credentials-dialog";
+import { useGetCredentials } from "@/hooks/useGetCredentials";
 
 type Props = {};
 
@@ -39,14 +42,14 @@ const CredentialsPage = (props: Props) => {
 
 export default CredentialsPage;
 
-const UserCredentials = async () => {
-  const credentials = await getCredentialsForUser();
+const UserCredentials = () => {
+  const credentialsQuery = useGetCredentials();
 
-  if (!credentials) {
+  if (!credentialsQuery.data) {
     return <div>Something went wrong </div>;
   }
 
-  if (credentials.length === 0) {
+  if (credentialsQuery.data.length === 0) {
     return (
       <Card className="w-full p-4">
         <div className="flex flex-col gap-4 items-center justify-center">
@@ -68,5 +71,33 @@ const UserCredentials = async () => {
     );
   }
 
-  return <div>User Creds</div>;
+  return (
+    <div className="flex gap-2 flex-wrap">
+      {credentialsQuery.data.map((credential) => {
+        const createdAt = formatDistanceToNow(credential.createdAt, {
+          addSuffix: true,
+        });
+
+        return (
+          <Card
+            key={credential.id}
+            className="w-full p-4 flex flex-row justify-between items-center"
+          >
+            <div>
+              <div className="rounded-full bg-primary/10 size-8 flex justify-center items-center">
+                <LockKeyholeIcon size={18} className="stroke-primary" />
+              </div>
+              <div>
+                <p className="font-bold">{credential.name}</p>
+                <p className="text-xs text-muted-foreground">{createdAt}</p>
+              </div>
+            </div>
+            <div>
+              <DeleteCredentialsDialog name={credential.name} />
+            </div>
+          </Card>
+        );
+      })}
+    </div>
+  );
 };

@@ -25,11 +25,6 @@ export const createCredentials = async (form: CreateCredentialSchemaType) => {
 
   const encryptedValue = symmetricEncrypt(data.value);
 
-  console.log("@TEST", {
-    plain: data.value,
-    encrypTed: encryptedValue,
-  });
-
   const result = await db.credential.create({
     data: {
       userId: user.id,

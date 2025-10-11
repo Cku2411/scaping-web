@@ -12,9 +12,10 @@ export const useCreateCredentials = () => {
     mutationFn: createCredentials,
     onSuccess: () => {
       toast.success("Creadentials created", { id: "create-credentials" });
+      queryClient.invalidateQueries({ queryKey: ["credentials"] });
     },
     onError: () => {
-      toast.success("failed to create Creadentials", {
+      toast.error("failed to create Creadentials", {
         id: "create-credentials",
       });
     },
