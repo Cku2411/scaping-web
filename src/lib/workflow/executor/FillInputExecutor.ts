@@ -9,11 +9,13 @@ export const FillInputExecutor = async (
     const selector = enviroment.getInput("Selector");
     if (!selector) {
       enviroment.log.error("input=> selector is not defined");
+      return false;
     }
 
     const value = enviroment.getInput("Value");
     if (!value) {
       enviroment.log.error("input=> value is not defined");
+      return false;
     }
 
     // return browsser form puppeteer

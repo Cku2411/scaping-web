@@ -9,6 +9,7 @@ export const ClickElementExecutor = async (
     const selector = enviroment.getInput("Selector");
     if (!selector) {
       enviroment.log.error("input=> selector is not defined");
+      return false;
     }
 
     // return browsser form puppeteer

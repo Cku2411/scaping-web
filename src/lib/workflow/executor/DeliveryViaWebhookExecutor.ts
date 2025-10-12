@@ -9,11 +9,13 @@ export const DeliveryViaWebHookExecutor = async (
     const targetUrl = enviroment.getInput("Target URL");
     if (!targetUrl) {
       enviroment.log.error("input=> Target URL is not defined");
+      return false;
     }
 
     const body = enviroment.getInput("Body");
     if (!body) {
       enviroment.log.error("input=> Body is not defined");
+      return false;
     }
 
     // seding datea

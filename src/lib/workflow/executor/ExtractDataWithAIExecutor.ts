@@ -50,14 +50,14 @@ export const ExtractDataWithAIExecutor = async (
     //   loginSelector: "body > div > form > input.btn.btn-primary",
     // };
 
-    const response = await geminiAi(plainCredentialValue, prompt);
+    const response = await geminiAi(plainCredentialValue, prompt, content);
 
     if (!response) {
       enviroment.log.error("gemini did not response");
       return false;
     }
 
-    enviroment.setOutput("Extracted data", JSON.stringify(response));
+    enviroment.setOutput("Extracted data", response);
 
     return true;
   } catch (error: any) {

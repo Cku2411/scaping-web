@@ -20,7 +20,7 @@ const NodeComponent = memo((props: Props) => {
 
   return (
     <NodeCard nodeId={props.id} isSelected={props.selected}>
-      {DEV_MODE && <Badge>DEV: {props.id}</Badge>}
+      {/* {DEV_MODE && <Badge>DEV: {props.id}</Badge>} */}
       <NodeHeader taskType={nodeData.type} nodeId={props.id} />
       <NodeInputs>
         {task.inputs.map((input, idx) => (

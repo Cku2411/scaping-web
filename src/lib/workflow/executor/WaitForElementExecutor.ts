@@ -8,11 +8,13 @@ export const WaitForElementExecutor = async (
     const selector = enviroment.getInput("Selector");
     if (!selector) {
       enviroment.log.error("input=> selector is not defined");
+      return false;
     }
 
     const visibility = enviroment.getInput("Visibility");
     if (!selector) {
       enviroment.log.error("input=> visibility is not defined");
+      return false;
     }
 
     // return browsser form puppeteer
