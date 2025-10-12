@@ -20,7 +20,7 @@ export const ReadeProperFromJsonExecutor = async (
     }
 
     const json = JSON.parse(JsonData);
-    const propertyValue = json[0][propertyName];
+    const propertyValue = json[propertyName];
 
     if (!propertyValue) {
       enviroment.log.error("property not found");
