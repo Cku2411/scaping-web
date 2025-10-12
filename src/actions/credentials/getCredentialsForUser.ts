@@ -17,3 +17,17 @@ export const getCredentialsForUser = async () => {
     },
   });
 };
+
+export const getCredential = async (id: string) => {
+  const user = await currentUser();
+
+  if (!user?.id) {
+    throw new Error("Unauthenticated");
+  }
+
+  return db.credential.findUnique({
+    where: {
+      id: id,
+    },
+  });
+};

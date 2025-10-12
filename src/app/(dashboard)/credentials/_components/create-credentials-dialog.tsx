@@ -44,6 +44,8 @@ const CreateCredentialsDialog = ({ triggerText }: Props) => {
     (values: CreateCredentialSchemaType) => {
       toast.loading("Creating credentials ...", { id: "create-credentials" });
       createCredentialsMutation(values);
+      form.reset();
+      setOpen(false);
     },
     [createCredentialsMutation]
   );

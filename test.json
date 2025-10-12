@@ -1,12 +1,40 @@
 {
-  "workflow": {
-    "id": "cmfpjxh5o0000uvg8cov115fs",
-    "userId": "user_32SHOpQvhUfJgCRmuUFyMUExLlK",
-    "name": "in the kitchen",
-    "description": "",
-    "definition": "{\n    \"nodes\": [\n        {\n            \"id\": \"57767fb3-e0bb-4b76-bc06-383f4a219b79\",\n            \"type\": \"Node\",\n            \"dragHandle\": \".drag-handle\",\n            \"data\": {\n                \"type\": \"LAUNCH_BROWSER\",\n                \"inputs\": {\n                    \"Website URL\": \"for working\"\n                }\n            },\n            \"position\": {\n                \"x\": -100,\n                \"y\": -200\n            },\n            \"measured\": {\n                \"width\": 420,\n                \"height\": 175\n            },\n            \"selected\": false,\n            \"dragging\": false\n        },\n        {\n            \"id\": \"2e9d4896-d3dd-48a2-bae2-7d3fb2b852f1\",\n            \"type\": \"Node\",\n            \"dragHandle\": \".drag-handle\",\n            \"data\": {\n                \"type\": \"PAGE_TO_HTML\",\n                \"inputs\": {}\n            },\n            \"position\": {\n                \"x\": 200,\n                \"y\": 350\n            },\n            \"measured\": {\n                \"width\": 420,\n                \"height\": 99\n            }\n        },\n        {\n            \"id\": \"41f46331-8cff-4663-9782-20f724ba5917\",\n            \"type\": \"Node\",\n            \"dragHandle\": \".drag-handle\",\n            \"data\": {\n                \"type\": \"PAGE_TO_HTML\",\n                \"inputs\": {}\n            },\n            \"position\": {\n                \"x\": -250,\n                \"y\": 150\n            },\n            \"measured\": {\n                \"width\": 420,\n                \"height\": 99\n            },\n            \"selected\": false,\n            \"dragging\": false\n        },\n        {\n            \"id\": \"a1518113-4b3e-4587-acc2-abe4b32da871\",\n            \"type\": \"Node\",\n            \"dragHandle\": \".drag-handle\",\n            \"data\": {\n                \"type\": \"PAGE_TO_HTML\",\n                \"inputs\": {}\n            },\n            \"position\": {\n                \"x\": 750,\n                \"y\": -200\n            },\n            \"measured\": {\n                \"width\": 420,\n                \"height\": 99\n            }\n        },\n        {\n            \"id\": \"40e753d1-f5b2-4ec8-b519-783a05018bde\",\n            \"type\": \"Node\",\n            \"dragHandle\": \".drag-handle\",\n            \"data\": {\n                \"type\": \"PAGE_TO_HTML\",\n                \"inputs\": {}\n            },\n            \"position\": {\n                \"x\": 850,\n                \"y\": 300\n            },\n            \"measured\": {\n                \"width\": 420,\n                \"height\": 99\n            },\n            \"selected\": true,\n            \"dragging\": false\n        }\n    ],\n    \"edges\": [],\n    \"viewport\": {\n        \"x\": 206.65374353387182,\n        \"y\": 316.6707554593733,\n        \"zoom\": 0.5743491774985177\n    }\n}",
-    "status": "DRAFT",
-    "createAt": "2025-09-18T15:14:34.139Z",
-    "updateAt": "2025-09-19T07:59:20.575Z"
+  "sdkHttpResponse": {
+    "headers": {
+      "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+      "content-encoding": "gzip",
+      "content-type": "application/json; charset=UTF-8",
+      "date": "Sun, 12 Oct 2025 04:26:46 GMT",
+      "server": "scaffolding on HTTPServer2",
+      "server-timing": "gfet4t7; dur=23212",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, X-Origin, Referer",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "SAMEORIGIN",
+      "x-xss-protection": "0"
+    }
+  },
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Here are the Extractor configurations for the provided HTML, assuming a common CSS selector syntax used by web scraping tools (like Scrapy's Selectorlib, Portia, or similar frameworks).\n\nThe configuration will extract general page information, details about the login form, and footer links.\n\n```json\n[\n  {\n    \"url\": \"quotes.toscrape.com/login\",\n    \"name\": \"LoginPage\",\n    \"fields\": [\n      {\n        \"name\": \"page_title\",\n        \"css\": \"title::text\"\n      },\n      {\n        \"name\": \"header_main_title\",\n        \"css\": \"div.header-box h1 a::text\"\n      },\n      {\n        \"name\": \"header_login_link_text\",\n        \"css\": \"div.header-box a[href='/login']::text\"\n      },\n      {\n        \"name\": \"header_login_link_url\",\n        \"css\": \"div.header-box a[href='/login']::attr(href)\"\n      },\n      {\n        \"name\": \"form_action\",\n        \"css\": \"form::attr(action)\"\n      },\n      {\n        \"name\": \"form_method\",\n        \"css\": \"form::attr(method)\"\n      },\n      {\n        \"name\": \"csrf_token_name\",\n        \"css\": \"input[name='csrf_token']::attr(name)\"\n      },\n      {\n        \"name\": \"csrf_token_value\",\n        \"css\": \"input[name='csrf_token']::attr(value)\"\n      },\n      {\n        \"name\": \"username_label\",\n        \"css\": \"label[for='username']::text\"\n      },\n      {\n        \"name\": \"username_input_id\",\n        \"css\": \"input#username::attr(id)\"\n      },\n      {\n        \"name\": \"username_input_name\",\n        \"css\": \"input#username::attr(name)\"\n      },\n      {\n        \"name\": \"password_label\",\n        \"css\": \"div.row:nth-of-type(3) label::text\"\n        // Note: The HTML has a typo: <label for=\"username\">Password</label>.\n        // Using nth-of-type(3) on .row is more robust here than targeting the 'for' attribute directly for \"Password\".\n      },\n      {\n        \"name\": \"password_input_id\",\n        \"css\": \"input#password::attr(id)\"\n      },\n      {\n        \"name\": \"password_input_name\",\n        \"css\": \"input#password::attr(name)\"\n      },\n      {\n        \"name\": \"submit_button_value\",\n        \"css\": \"input[type='submit']::attr(value)\"\n      },\n      {\n        \"name\": \"footer_goodreads_text\",\n        \"css\": \"footer p.text-muted a::text\"\n      },\n      {\n        \"name\": \"footer_goodreads_url\",\n        \"css\": \"footer p.text-muted a::attr(href)\"\n      },\n      {\n        \"name\": \"footer_zyte_text\",\n        \"css\": \"footer p.copyright a.zyte::text\"\n      },\n      {\n        \"name\": \"footer_zyte_url\",\n        \"css\": \"footer p.copyright a.zyte::attr(href)\"\n      }\n    ]\n  }\n]\n```\n\n**Explanation of Selectors:**\n\n*   `::text`: Extracts the direct text content of the selected element.\n*   `::attr(attribute_name)`: Extracts the value of the specified attribute from the selected element.\n*   `element_name`: Selects elements by their tag name (e.g., `title`, `h1`, `a`, `form`, `input`, `label`, `p`, `div`).\n*   `.class_name`: Selects elements by their class (e.g., `.header-box`, `.text-muted`, `.copyright`, `.zyte`).\n*   `#id_name`: Selects elements by their ID (e.g., `#username`, `#password`).\n*   `[attribute='value']`: Selects elements with a specific attribute value (e.g., `a[href='/login']`, `input[name='csrf_token']`, `input[type='submit']`).\n*   `element1 element2`: Descendant selector (selects `element2` that is a descendant of `element1`).\n*   `element:nth-of-type(n)`: Selects the `n`-th element of its type among siblings. Used for `div.row:nth-of-type(3)` to accurately target the `div.row` containing the password label."
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "modelVersion": "gemini-2.5-flash",
+  "responseId": "Bi7raO6IAu-Fvr0PjdWbqQo",
+  "usageMetadata": {
+    "promptTokenCount": 518,
+    "candidatesTokenCount": 1098,
+    "totalTokenCount": 4339,
+    "promptTokensDetails": [{ "modality": "TEXT", "tokenCount": 518 }],
+    "thoughtsTokenCount": 2723
   }
 }
