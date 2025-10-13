@@ -12,7 +12,7 @@ export const useGetWorkflowExecutionWithPhase = (executionId: string) => {
     queryFn: async () => await getWorkflowExecutionWithPhases(executionId),
     // Keep polling while the execution is RUNNING so phases update live
     refetchInterval: (q) =>
-      q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 2000 : false,
+      q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 3000 : false,
     // refetchOnWindowFocus: true,
   });
 
