@@ -1,9 +1,10 @@
-import getWorkflowExecutionWithPhases from "@/actions/workflows/getWorkflowExecutionWIthPhases";
+"use client";
+
 import Topbar from "@/app/workflow/_components/topbar/Topbar";
-import { currentUser } from "@clerk/nextjs/server";
 import { Loader2Icon } from "lucide-react";
-import React, { Suspense } from "react";
+import React, { Suspense, use } from "react";
 import ExecutionViewer from "./_components/ExecutionViewer";
+import { useGetWorkflowExecutionWithPhase } from "@/hooks/useGetWorfkflowExecutionWithPhases";
 
 type Props = {
   params: {
@@ -12,9 +13,14 @@ type Props = {
   };
 };
 
-const ExecutionViewerPage = async ({ params }: Props) => {
-  const { executionId } = await params;
-  const { workflowId } = await params;
+const ExecutionViewerPage = ({ params }: Props) => {
+  const { executionId, workflowId } = use(params);
+
+  const workflowExecutionQuery = useGetWorkflowExecutionWithPhase(executionId);
+  if (!workflowExecutionQuery.data) {
+    return <div>Not Found</div>;
+  }
+
   return (
     <div className="flex flex-col h-screen w-full overflow-hidden">
       <Topbar
@@ -24,37 +30,16 @@ const ExecutionViewerPage = async ({ params }: Props) => {
         hideButton
       />
       <section className="h-full flex overflow-auto">
-        <Suspense
-          fallback={
-            <div className="flex w-full items-center justify-center">
-              <Loader2Icon className="size-10 animate-spin stroke-primary" />
-            </div>
-          }
-        >
-          <ExecutionViewerWrapper executionId={executionId} />
-        </Suspense>
+        {workflowExecutionQuery.data && workflowExecutionQuery.isFetching ? (
+          <div className="flex w-full items-center justify-center">
+            <Loader2Icon className="size-10 animate-spin stroke-primary" />
+          </div>
+        ) : (
+          <ExecutionViewer initialData={workflowExecutionQuery.data} />
+        )}
       </section>
     </div>
   );
 };
 
 export default ExecutionViewerPage;
-
-const ExecutionViewerWrapper = async ({
-  executionId,
-}: {
-  executionId: string;
-}) => {
-  const user = await currentUser();
-  if (!user?.id) {
-    return <div>Unauthenticated</div>;
-  }
-
-  const workflowExecution = await getWorkflowExecutionWithPhases(executionId);
-  if (!workflowExecution) {
-    return <div>Not Found</div>;
-  }
-  // return <pre>{JSON.stringify(workflowExecution, null, 4)}</pre>;
-
-  return <ExecutionViewer initialData={workflowExecution} />;
-};

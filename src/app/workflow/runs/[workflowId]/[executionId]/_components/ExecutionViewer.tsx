@@ -40,11 +40,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { log } from "console";
 import { cn } from "@/lib/utils";
 import { LogLevel } from "@/types/LogCollector";
 import PhaseStatusBadge from "./PhaseStatusBadge";
-import { useQuery } from "@tanstack/react-query";
 import ReactCountUpWrapper from "@/components/ReactCountUpWrapper";
 
 type ExecutionData = Awaited<ReturnType<typeof getWorkflowExecutionWithPhases>>;
@@ -55,11 +53,11 @@ type Props = {
 
 const ExecutionViewer = ({ initialData }: Props) => {
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
-  const executionQuery = useGetWorkflowExecutionWithPhase(initialData);
+  const executionQuery = useGetWorkflowExecutionWithPhase(initialData!.id);
 
   const phaseDetailQuery = useGetWorkflowPhaseDetails(
     selectedPhase,
-    executionQuery.data?.status
+    executionQuery.data!.status
   );
 
   const isRunning =
@@ -317,8 +315,6 @@ const ParamaterViewer = ({
 };
 
 const LogViewer = ({ logs }: { logs: ExecutionLog[] | undefined }) => {
-  console.log("LOGS", logs);
-
   if (!logs || logs?.length === 0) return null;
 
   return (

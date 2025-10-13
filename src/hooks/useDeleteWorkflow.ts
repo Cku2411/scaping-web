@@ -10,6 +10,7 @@ export const useDeleteWorkflow = (workflowId: string) => {
       mutationFn: deleteWorkflow,
       onSuccess: () => {
         toast.success("workflow deleted", { id: workflowId });
+        queryClient.invalidateQueries({ queryKey: ["workflow"] });
       },
       onError: () => {
         toast.success("failed to delete workflow", { id: workflowId });
