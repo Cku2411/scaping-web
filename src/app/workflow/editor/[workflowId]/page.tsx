@@ -1,28 +1,35 @@
-import React from "react";
+"use client";
+
+import React, { use } from "react";
 import EditorPage from "../../_components/Editor";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, FileXIcon } from "lucide-react";
-import { redirect } from "next/navigation";
-import { getWorkflowById } from "@/actions/workflows/getWorkflowById";
+import { useRouter } from "next/navigation";
+import { useGetWorkflowsById } from "@/hooks/useGetWorkflowsById";
 
 type Props = {};
 
-const WorkflowEditor = async ({
-  params,
-}: {
-  params: { workflowId: string };
-}) => {
-  const { workflowId } = await params;
+const WorkflowEditor = ({ params }) => {
+  const { workflowId } = use(params);
+  const router = useRouter();
+
+  console.log({ workflowId });
 
   try {
-    const workflow = await getWorkflowById(workflowId);
-    return <EditorPage workflow={workflow} />;
+    // const workflow = await getWorkflowById(workflowId);
+
+    const workflowQuery = useGetWorkflowsById(workflowId);
+    if (!workflowQuery.data) {
+      return <div>No queyry</div>;
+    }
+
+    return <EditorPage workflow={workflowQuery.data} />;
   } catch (error: any) {
     console.error("Error loading workflow:", error);
 
     // Handle authentication error
     if (error.message === "Unauthenticated") {
-      redirect("/sign-in");
+      router.push("/sign-in");
     }
 
     // Handle workflow not found

@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useGetAllWorkflowExecutions = (workflowId: string) => {
   const query = useQuery({
-    queryKey: ["executions"],
+    queryKey: ["executions", workflowId],
     queryFn: async () => await getWorkflowExecutions(workflowId),
     // refetchInterval: (q) =>
     //   q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 1000 : false,

@@ -50,7 +50,7 @@ const useExecutionPlan = () => {
     clearErrors();
 
     return executionPlan;
-  }, [toObject, handleError]);
+  }, [toObject, handleError, setInvalidInputs, clearErrors]);
 
   return generateExecutionPlan;
 };
