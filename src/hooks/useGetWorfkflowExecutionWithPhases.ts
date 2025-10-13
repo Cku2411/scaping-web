@@ -10,8 +10,10 @@ export const useGetWorkflowExecutionWithPhase = (executionId: string) => {
   const query = useQuery({
     queryKey: ["execution", executionId],
     queryFn: async () => await getWorkflowExecutionWithPhases(executionId),
-    // refetchInterval: (q) =>
-    //   q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 1000 : false,
+    // Keep polling while the execution is RUNNING so phases update live
+    refetchInterval: (q) =>
+      q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 2000 : false,
+    // refetchOnWindowFocus: true,
   });
 
   return query;

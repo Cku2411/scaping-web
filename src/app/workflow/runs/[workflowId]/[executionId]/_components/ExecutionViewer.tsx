@@ -11,7 +11,7 @@ import {
   LucideIcon,
   WorkflowIcon,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -67,12 +67,14 @@ const ExecutionViewer = ({ initialData }: Props) => {
     // while running we auto-select the current running phase in the sidebar, so we need to update setSelectedPhase without clicking.
     // get phases
     const phases = executionQuery.data?.phases || [];
+    if (!phases.length) return;
     if (isRunning) {
       // select the last executed phase
       const phaseToSelect = phases.toSorted((a, b) =>
         a.startedAt! > b.startedAt! ? -1 : 1
       )[0];
-
+      if (!phaseToSelect) return;
+      if (selectedPhase === phaseToSelect.id) return;
       setSelectedPhase(phaseToSelect.id);
       return;
     }
@@ -81,8 +83,10 @@ const ExecutionViewer = ({ initialData }: Props) => {
       a.completedAt! > b.completedAt! ? -1 : 1
     )[0];
 
+    if (!phaseToSelect) return;
+    if (selectedPhase === phaseToSelect.id) return;
     setSelectedPhase(phaseToSelect.id);
-  }, [executionQuery.data?.phases, isRunning, setSelectedPhase]);
+  }, [executionQuery.data?.phases, isRunning, selectedPhase, setSelectedPhase]);
 
   const duration = datesToDurationString(
     executionQuery.data?.completedAt,
@@ -152,27 +156,31 @@ const ExecutionViewer = ({ initialData }: Props) => {
         <Separator />
 
         <div className="overflow-auto h-full px-2 py-4">
-          {executionQuery.data?.phases.map((phase, index) => {
-            return (
-              <Button
-                key={index}
-                className="w-full justify-between"
-                variant={selectedPhase === phase.id ? "secondary" : "ghost"}
-                onClick={() => {
-                  if (isRunning) return;
-                  setSelectedPhase(phase.id);
-                }}
-              >
-                <div className="flex items-center gap-2">
-                  <Badge variant={"outline"}>{index + 1}</Badge>
-                  <p className="font-semibold">{phase.name}</p>
-                </div>
-                <PhaseStatusBadge
-                  status={phase.status as ExecutionPhasesStatus}
-                />
-              </Button>
-            );
-          })}
+          {useMemo(
+            () =>
+              (executionQuery.data?.phases || []).map((phase, index) => {
+                return (
+                  <Button
+                    key={phase.id}
+                    className="w-full justify-between"
+                    variant={selectedPhase === phase.id ? "secondary" : "ghost"}
+                    onClick={() => {
+                      if (isRunning) return;
+                      setSelectedPhase(phase.id);
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Badge variant={"outline"}>{index + 1}</Badge>
+                      <p className="font-semibold">{phase.name}</p>
+                    </div>
+                    <PhaseStatusBadge
+                      status={phase.status as ExecutionPhasesStatus}
+                    />
+                  </Button>
+                );
+              }),
+            [executionQuery.data?.phases, isRunning, selectedPhase]
+          )}
         </div>
       </aside>
 
