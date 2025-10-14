@@ -335,9 +335,9 @@ const createExecutionEnviroment = (
 
 const cleanupEnviroment = async (enviroment: EnviromentType) => {
   // close enviroment
-  // if (enviroment.browser) {
-  //   await enviroment.browser
-  //     .close()
-  //     .catch((err) => console.error("cannot close browser, reason: ", err));
-  // }
+  if (enviroment.browser) {
+    await enviroment.browser
+      .close()
+      .catch((err) => console.error("cannot close browser, reason: ", err));
+  }
 };
