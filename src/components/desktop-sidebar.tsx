@@ -23,7 +23,7 @@ import UserAvailableCreditBadge from "./UserAvailableCreditBadge";
 type Props = {};
 const routes = [
   {
-    href: "",
+    href: "/",
     label: "Home",
     icon: HomeIcon,
   },

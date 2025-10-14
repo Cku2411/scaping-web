@@ -11,14 +11,18 @@ export const LaunchBrowserExecutor = async (
 
     const browser = await puppeteer.launch({
       headless: false,
+      args: ["--proxy-server=brd.superproxy.io:33335"],
     });
     enviroment.log.info(`Browser started successfully`);
     enviroment.setBrowser(browser);
     const page = await browser.newPage();
-    await page.goto(websiteUrl);
-
     // Set screen size.
     await page.setViewport({ width: 1080, height: 1024 });
+    await page.authenticate({
+      username: "brd-customer-hl_5d8090a5-zone-datacenter_proxy2",
+      password: "lab0m7gazajw",
+    });
+    await page.goto(websiteUrl);
 
     // add Page
     enviroment.setPage(page);
