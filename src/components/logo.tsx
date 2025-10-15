@@ -12,7 +12,7 @@ const Logo = ({ fontSize = "text-2xl", iconSize = 20 }: Props) => {
   return (
     <Link
       href={"/"}
-      className={cn("font-extrabold flex items-center gap-2", fontSize)}
+      className={cn("font-extrabold flex items-center gap-2 mb-2", fontSize)}
     >
       <div className="rounded-xl bg-gradient-to-r from-amber-400 to-yellow-600 p-2">
         <SquareDashedMousePointer size={iconSize} className="stroke-white" />

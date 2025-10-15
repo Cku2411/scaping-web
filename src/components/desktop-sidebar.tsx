@@ -23,7 +23,7 @@ import UserAvailableCreditBadge from "./UserAvailableCreditBadge";
 type Props = {};
 const routes = [
   {
-    href: "/",
+    href: "",
     label: "Home",
     icon: HomeIcon,
   },
@@ -61,7 +61,7 @@ const DesktopSidebar = (props: Props) => {
       <div className="flex flex-col p-2">
         {routes.map((route, idx) => (
           <Link
-            href={route.href}
+            href={`/${route.href}`}
             key={idx}
             className={buttonVariants({
               variant:
@@ -111,7 +111,7 @@ export const MobileSideBar = () => {
             <div className="flex flex-col gap-1">
               {routes.map((route, idx) => (
                 <Link
-                  href={route.href}
+                  href={`/${route.href}`}
                   key={idx}
                   className={buttonVariants({
                     variant:

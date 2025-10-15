@@ -140,5 +140,13 @@
     --chart-5: oklch(0.645 0.246 16.439);
     --color-success: hsl(140 55% 45%);
     --color-failed: hsl(0 75% 60%);
+    .react-flow__controls-button {
+      @apply !bg-accent;
+    }
   }
+}
+
+.react-flow__attribution {
+  background: transparent !important;
+  display: none;
 }
