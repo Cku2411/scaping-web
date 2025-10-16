@@ -1,4 +1,5 @@
 "use client";
+import { purchaseCredits } from "@/actions/billing/purchaseCredits";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,6 +12,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CreditsPack, PackId } from "@/types/billingType";
+import { useMutation } from "@tanstack/react-query";
 import { CoinsIcon, CreditCard } from "lucide-react";
 import React, { useState } from "react";
 
@@ -18,6 +20,13 @@ type Props = {};
 
 const CreditsPurchase = (props: Props) => {
   const [selectedPack, setSelectedPack] = useState(PackId.MEDIUM);
+
+  const mutation = useMutation({
+    mutationFn: purchaseCredits,
+    onSuccess: () => {},
+    onError: () => {},
+  });
+
   return (
     <Card>
       <CardHeader>
@@ -59,7 +68,11 @@ const CreditsPurchase = (props: Props) => {
         </RadioGroup>
       </CardContent>
       <CardFooter>
-        <Button className="w-full">
+        <Button
+          className="w-full"
+          disabled={mutation.isPending}
+          onClick={() => mutation.mutate(selectedPack)}
+        >
           <CreditCard className="mr-2 size-5" /> Purchase credits
         </Button>
       </CardFooter>
