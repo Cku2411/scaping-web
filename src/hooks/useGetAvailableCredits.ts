@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 export const useGetAvailabelCredits = () => {
   const query = useQuery({
     queryKey: ["user-available-credits"],
-    queryFn: async () => await getAvailableCredits(),
+    queryFn: getAvailableCredits,
     // refetchInterval: 30 * 1000,
   });
 

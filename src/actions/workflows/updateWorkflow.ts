@@ -39,4 +39,6 @@ export const updateWorkflow = async ({
       userId: user.id,
     },
   });
+
+  revalidatePath("/workflows");
 };

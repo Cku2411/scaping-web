@@ -37,5 +37,5 @@ export const createCredentials = async (form: CreateCredentialSchemaType) => {
     throw new Error("Faild to create credentials ");
   }
 
-  return "";
+  revalidatePath("/credentials");
 };

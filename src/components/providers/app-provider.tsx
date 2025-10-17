@@ -19,6 +19,12 @@ function makeQueryClient() {
     defaultOptions: {
       queries: {
         staleTime: 60 * 1000,
+        refetchOnWindowFocus: false,
+        networkMode: "online",
+      },
+      mutations: {
+        retry: 0,
+        networkMode: "online",
       },
     },
   });

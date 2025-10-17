@@ -48,4 +48,6 @@ export const duplicateWorkflow = async (form: DuplicateWorkflowSchemaType) => {
   if (!error) {
     throw new Error("faild to duplicate workflow");
   }
+
+  revalidatePath("/workflows");
 };

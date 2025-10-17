@@ -68,4 +68,5 @@ export const publishWorkflow = async ({
       status: WorkflowStatus.PUBLISHED,
     },
   });
+  revalidatePath("/workflows");
 };
